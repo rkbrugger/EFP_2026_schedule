@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EFP 2026 — Programme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --paper:#F2F0E6; --panel:#FBFAF3; --ink:#20271E; --forest:#2E4733;
+    --olive:#6E7A4C; --amber:#BD631A; --amber-soft:#F3E2CC;
+    --line:#DAD6C4; --line-strong:#C7C2AC; --muted:#7B7968; --muted-2:#9B9883;
+    --chip-bg:#EAE7D8;
+    --t-plenary:#7A3E1E; --t-symposium:#2E4733; --t-oral:#4A5A8A;
+    --t-flash:#9A7A12; --t-workshop:#6E4A86; --t-poster:#317A78;
+    --t-social:#A23E63; --t-break:#9B9883; --t-other:#5C6B57;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif; font-size:15px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+  /* ---------- Masthead ---------- */
+  header.top{
+    background:
+      radial-gradient(120% 120% at 90% -20%, rgba(189,99,26,.10), transparent 60%),
+      var(--forest);
+    color:#F4F2E7; border-bottom:3px solid var(--amber);
+  }
+  .masthead{padding:26px 0 20px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px;justify-content:space-between}
+  .brand .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:#CDBFA0;margin:0 0 6px
+  }
+  .brand h1{
+    font-family:"Fraunces",serif;font-weight:600;font-size:clamp(28px,5vw,46px);
+    line-height:1.02;margin:0;letter-spacing:-.01em
+  }
+  .brand h1 em{font-style:italic;color:#E8B888;font-weight:500}
+  .brand .sub{margin:8px 0 0;color:#D8D2BE;font-size:13.5px;max-width:52ch}
+  .stamp{
+    text-align:right;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+    color:#CDBFA0;line-height:1.7;white-space:nowrap
+  }
+  .stamp b{color:#F4F2E7;font-weight:500}
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{position:sticky;top:0;z-index:30;background:rgba(242,240,230,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .toolbar .wrap{padding:12px 20px}
+  .searchrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{position:relative;flex:1 1 280px;min-width:220px}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.5}
+  .search input{
+    width:100%;padding:11px 36px 11px 38px;border:1px solid var(--line-strong);
+    border-radius:10px;background:var(--panel);font:inherit;color:var(--ink)
+  }
+  .search input:focus{outline:2px solid var(--amber);outline-offset:0;border-color:transparent}
+  .search .clearx{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    border:0;background:transparent;cursor:pointer;color:var(--muted);font-size:18px;
+    padding:4px;display:none;line-height:1}
+  select{
+    padding:10px 30px 10px 12px;border:1px solid var(--line-strong);border-radius:10px;
+    background:var(--panel) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%237B7968' stroke-width='1.5'/></svg>") no-repeat right 10px center;
+    -webkit-appearance:none;appearance:none;font:inherit;color:var(--ink);cursor:pointer
+  }
+  .btn{
+    padding:10px 14px;border:1px solid var(--line-strong);border-radius:10px;
+    background:var(--panel);font:inherit;cursor:pointer;color:var(--ink);
+    display:inline-flex;align-items:center;gap:7px;white-space:nowrap
+  }
+  .btn:hover{border-color:var(--olive)}
+  .btn.primary{background:var(--forest);color:#F4F2E7;border-color:var(--forest)}
+  .btn.primary:hover{background:#26392a}
+  .btn svg{display:block}
+
+  .pillrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .pill{
+    font:500 13px "Inter";padding:6px 12px;border-radius:999px;cursor:pointer;
+    border:1px solid var(--line-strong);background:transparent;color:var(--ink)
+  }
+  .pill[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .pill .n{font-family:"IBM Plex Mono",monospace;font-size:11px;opacity:.6;margin-left:5px}
+  .pill[aria-pressed="true"] .n{opacity:.8}
+  .meta{display:flex;justify-content:space-between;align-items:center;gap:10px;
+    margin-top:10px;flex-wrap:wrap}
+  .count{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.02em}
+  .count b{color:var(--forest)}
+  .miniactions{display:flex;gap:6px}
+  .mini{border:0;background:transparent;color:var(--muted);font:500 12px "Inter";
+    cursor:pointer;padding:4px 6px;border-radius:6px}
+  .mini:hover{color:var(--amber);background:var(--amber-soft)}
+
+  /* ---------- Schedule body ---------- */
+  main{padding:8px 0 80px}
+  .day{margin-top:30px}
+  .dayhead{display:flex;align-items:baseline;gap:14px;
+    border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:6px}
+  .dayhead h2{font-family:"Fraunces",serif;font-weight:600;font-size:24px;margin:0;letter-spacing:-.01em}
+  .dayhead .dno{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--amber);
+    letter-spacing:.12em;text-transform:uppercase}
+  .dayhead .dcount{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted)}
+
+  .card{display:grid;grid-template-columns:84px 1fr;gap:0;
+    border-bottom:1px solid var(--line);position:relative}
+  .rail{padding:14px 12px 14px 4px;border-right:1px solid var(--line);text-align:right}
+  .rail .time{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;color:var(--forest)}
+  .body{padding:13px 4px 14px 16px;min-width:0}
+  .chiprow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .chip{font:600 10.5px "IBM Plex Mono",monospace;letter-spacing:.06em;text-transform:uppercase;
+    padding:3px 8px;border-radius:5px;color:#fff;white-space:nowrap}
+  .stitle{font-family:"Fraunces",serif;font-weight:600;font-size:17.5px;line-height:1.22;
+    margin:7px 0 0;letter-spacing:-.005em;cursor:pointer}
+  .card.noTalks .stitle{cursor:default}
+  .meta2{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px;color:var(--muted);font-size:13px}
+  .meta2 .room{display:inline-flex;align-items:center;gap:5px}
+  .meta2 .chairs{font-style:italic}
+  .toggle{display:inline-flex;align-items:center;gap:6px;margin-top:9px;
+    font:500 12.5px "Inter";color:var(--olive);background:transparent;border:0;cursor:pointer;padding:0}
+  .toggle .tw{font-family:"IBM Plex Mono",monospace;font-size:11px}
+  .toggle svg{transition:transform .18s}
+  .card.open .toggle svg,.pcard.open .toggle svg{transform:rotate(90deg)}
+
+  /* ---- parallel session slots ---- */
+  .pslot{border-bottom:1px solid var(--line);position:relative}
+  .pslot-head{display:grid;grid-template-columns:84px 1fr;align-items:center}
+  .pslot-time{padding:11px 12px 11px 4px;border-right:1px solid var(--line);text-align:right;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--forest)}
+  .pslot-label{padding:5px 4px 5px 16px;font:600 10px "IBM Plex Mono",monospace;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--amber)}
+  .pcols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);
+    overflow-x:auto;margin-left:84px;scrollbar-width:thin}
+  .pcard{padding:12px 16px 16px;border-left:1px solid var(--line);border-top:1px dashed var(--line);
+    min-width:0;position:relative}
+  .pcard-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .pcard-room{display:inline-flex;align-items:center;gap:5px;font:600 12px "Inter";color:var(--forest);
+    background:#E7E4D6;border:1px solid var(--line);border-radius:5px;padding:2px 8px}
+  .pcard-room.none{color:var(--muted);background:transparent;border-style:dashed}
+  .pcard-time{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+  .pcard .stitle{font-size:16px;margin-top:6px}
+
+  .talks{margin:10px 0 2px;display:none;border-left:2px solid var(--line);padding-left:0}
+  .card.open .talks,.card.forceopen .talks,.pcard.open .talks,.pcard.forceopen .talks{display:block}
+  .talk{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:8px 0 8px 14px;
+    border-top:1px dotted var(--line)}
+  .talk:first-child{border-top:0}
+  .talk .tk-time{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted-2);padding-top:2px}
+  .talk .tk-main{min-width:0}
+  .tk-code{font:600 10px "IBM Plex Mono",monospace;letter-spacing:.05em;color:var(--amber);
+    border:1px solid var(--amber-soft);background:#fff;padding:1px 5px;border-radius:4px;margin-right:6px}
+  .tk-title{font-size:14px;line-height:1.32}
+  .tk-by{margin-top:2px;font-size:12.5px;color:var(--muted)}
+  .tk-by .who{color:var(--ink);font-weight:600}
+  .tk-vid{font:600 9px "IBM Plex Mono";color:var(--t-poster);border:1px solid var(--t-poster);
+    border-radius:4px;padding:0 4px;margin-left:6px;vertical-align:middle;letter-spacing:.04em}
+
+  mark{background:var(--amber-soft);color:#5c3410;border-radius:3px;padding:0 1px}
+  .empty{text-align:center;padding:70px 20px;color:var(--muted)}
+  .empty .big{font-family:"Fraunces",serif;font-size:22px;color:var(--ink);margin-bottom:6px}
+
+  footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;
+    padding:20px;text-align:center;line-height:1.7}
+  footer a{color:var(--olive)}
+
+  @media (max-width:640px){
+    .card{grid-template-columns:62px 1fr}
+    .rail{padding:12px 8px 12px 2px}
+    .rail .time{font-size:11px}
+    .body{padding-left:12px}
+    .talk{grid-template-columns:1fr}
+    .talk .tk-time{padding-top:0}
+    .stamp{display:none}
+    .pslot-head{grid-template-columns:54px 1fr}
+    .pslot-time{padding:10px 6px 10px 2px;font-size:11px}
+    .pcols{margin-left:0;grid-auto-columns:minmax(78vw,1fr)}
+    .pcard{border-left:0;border-right:1px dashed var(--line)}
+  }
+  @media print{
+    .toolbar,footer{display:none}
+    .talks{display:block !important}
+    .toggle{display:none}
+    body{background:#fff}
+    .pcols{display:block;margin-left:0;overflow:visible}
+    .pcard{border-left:0}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap masthead">
+    <div class="brand">
+      <p class="eyebrow">11th EFP Meeting · Montpellier</p>
+      <h1>European Federation<br>for <em>Primatology</em> 2026</h1>
+      <p class="sub">Searchable programme — plenaries, symposia, oral &amp; flash sessions, posters and events. Filter by day, type or room; export what you see as a PDF.</p>
+    </div>
+    <div class="stamp">
+      <div><b>29 Jun – 3 Jul 2026</b></div>
+      <div>MSH-Sud · Botanic Institute</div>
+      <div>Montpellier, France</div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap">
+    <div class="searchrow">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+        <input id="q" type="search" placeholder="Search talks, speakers, institutions, codes…" autocomplete="off" spellcheck="false">
+        <button class="clearx" id="clearx" title="Clear">×</button>
+      </div>
+      <select id="typeSel" aria-label="Filter by type"></select>
+      <select id="roomSel" aria-label="Filter by room"></select>
+      <button class="btn primary" id="pdfBtn" title="Export the current view as PDF">
+        <svg width="15" height="15" viewBox="0 0 16 16"><path d="M8 1v8m0 0l-3-3m3 3l3-3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 11v3h12v-3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        Export PDF
+      </button>
+    </div>
+    <div class="pillrow" id="dayPills"></div>
+    <div class="meta">
+      <div class="count" id="count"></div>
+      <div class="miniactions">
+        <button class="mini" id="expandAll">Expand all</button>
+        <button class="mini" id="collapseAll">Collapse all</button>
+        <button class="mini" id="printBtn">Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="list"></main>
+
+<footer>
+  Programme data transcribed from the official EFP 2026 schedule ·
+  <a href="https://www.alphavisa.com/efp/2026/index.php" target="_blank" rel="noopener">alphavisa.com/efp/2026</a><br>
+  Unofficial companion view. Sessions marked “TBC” reflect the published programme; always confirm against the official site.
+</footer>
+
+<script>
+const DATA = {"days": ["Monday 29 June", "Tuesday 30 June", "Wednesday 1 July", "Thursday 2 July", "Friday 3 July"], "sessions": [{"day": "Monday 29 June", "time": "13:00-14:00", "type": "Other", "title": "Meeting registration", "room": "Hall — Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Monday 29 June", "time": "14:00-16:30", "type": "Workshop", "title": "Animal social network analysis", "room": "Ideon room — Botanic Institute", "chairs": "Instructors: Daniel REDHEAD & Ben KAWAM", "talks": [], "note": ""}, {"day": "Monday 29 June", "time": "14:00-16:30", "type": "Workshop", "title": "Cross-perspectives on building a foundation of trust in fieldwork", "room": "Auditorium — MSH-Sud", "chairs": "Instructors: Harmonie KLEIN & Julie DUBOSCQ", "talks": [], "note": ""}, {"day": "Monday 29 June", "time": "14:00-16:30", "type": "Workshop", "title": "Primate comedy club", "room": "Botany lecture hall — Botanic Institute", "chairs": "Instructor: Alice BANIEL", "talks": [], "note": ""}, {"day": "Monday 29 June", "time": "16:30-17:00", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Monday 29 June", "time": "17:00-17:30", "type": "Other", "title": "Welcome Introduction", "room": "Botany lecture hall — Botanic Institute", "chairs": "The organizing committee", "talks": [], "note": ""}, {"day": "Monday 29 June", "time": "17:30-18:30", "type": "Plenary", "title": "Plenary 1", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "KN-01", "time": "17:30-18:30", "title": "Looking at gender and power in primatology through a decolonial lens", "speaker": "Patricia IZAR", "aff": "Universidade de Sao Paulo, Sao Paulo, Brazil", "video": false}], "note": ""}, {"day": "Monday 29 June", "time": "18:30-21:30", "type": "Social", "title": "Cocktail", "room": "Botanical Garden — Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "08:00-08:45", "type": "Other", "title": "Meeting registration", "room": "Hall — Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "08:00-08:45", "type": "Break", "title": "Coffee", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "08:45-09:30", "type": "Other", "title": "Opening Remarks", "room": "Botany lecture hall — Botanic Institute", "chairs": "The organizing committee", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "09:30-10:30", "type": "Plenary", "title": "Plenary 2", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "KN-02", "time": "09:30-10:30", "title": "The arrogant ape: the myth of human exceptionalism and why it matters", "speaker": "Christine WEBB", "aff": "New York University, New York, United States", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "10:30-11:00", "type": "Flash talks", "title": "Flash talks 1", "room": "", "chairs": "Chairs: TBC", "talks": [{"code": "FT-01", "time": "10:30-10:35", "title": "Are aggressiveness and sociability consistent personality traits in a basal primate model, the grey mouse lemur?", "speaker": "Lena SEITZ", "aff": "Institute of Zoology, University of Veterinary Medicine, Hanover, Germany", "video": false}, {"code": "FT-02", "time": "10:35-10:40", "title": "Ecological factors influencing object manipulation in Balinese long-tailed macaques", "speaker": "Brooke THIRD", "aff": "Psychology, University of Lethbridge, Lethbridge, Alberta, Canada", "video": false}, {"code": "FT-03", "time": "10:40-10:45", "title": "Behavioural development in wild chacma baboon offspring under varying socio-environmental conditions", "speaker": "Martin GOURDON", "aff": "Anthropology, University College London, London, United Kingdom", "video": false}, {"code": "FT-04", "time": "10:45-10:50", "title": "What do infants experience during carrying practices? Early sensorimotor stimulations in primates", "speaker": "Camille NOZIÈRES", "aff": "Laboratoire Éthologie Cognition Développement, Université Paris Nanterre, Nanterre, France", "video": false}, {"code": "FT-05", "time": "10:50-10:55", "title": "Ape Research Index (ARI): applications of archiving research histories of captive chimpanzees", "speaker": "Siddharth GIRISH", "aff": "Interdisciplinary Center for Archaeology and the Evolution of Human Behaviour, University of Algarve, Faro, Algarve, Portugal", "video": false}, {"code": "FT-06", "time": "10:55-11:00", "title": "Effects of stimulus novelty and socioemotional cues on curiosity in captive chimpanzees (Pan troglodytes)", "speaker": "Saein LEE", "aff": "University of Zurich, Zurich, Switzerland", "video": true}], "note": ""}, {"day": "Tuesday 30 June", "time": "11:00-11:30", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "11:30-13:00", "type": "Symposium", "title": "Symposium 1 — Ilithology: the comparative study of birth", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S1-01", "time": "11:30-11:45", "title": "The study of birth across species and its implications for animal minds", "speaker": "Christine WEBB", "aff": "Department of Environmental / Animal Studies, New York University, New York, USA", "video": false}, {"code": "S1-02", "time": "11:45-12:00", "title": "Comparative evidence for the gradual obstetric compromise hypothesis", "speaker": "Nicole M. WEBB", "aff": "Paleoanthropology, Senckenberg Research Institute and Natural History Museum Frankfurt, Frankfurt, Germany", "video": false}, {"code": "S1-03", "time": "12:00-12:15", "title": "Is the pelvic-floor of tailed primates comparable to that of modern humans? An anatomical study of five non-human primates testing the pelvic floor hypothesis", "speaker": "Pierre FREMONDIERE", "aff": "ADES UMR 7268, Aix Marseille University, Marseille, France", "video": false}, {"code": "S1-04", "time": "12:15-12:30", "title": "Humans are not unique in having complicated births: a comparative analysis of primate cephalopelvic fit", "speaker": "Lia BETTI", "aff": "Department of Anthropology, University College London, London, United Kingdom", "video": false}, {"code": "S1-05", "time": "12:30-12:45", "title": "Humans are not exceptional: birth complications and associated mortality are common among placental mammals", "speaker": "Nicole D.S. GRUNSTRA", "aff": "Dept. Evolutionary Biology, University of Vienna, Vienna, Austria", "video": false}, {"code": "S1-06", "time": "12:45-13:00", "title": "“Tight Squeeze”: parturitional behaviours and the obstetric dilemma in nonhuman primates", "speaker": "Alecia CARTER", "aff": "Department of Anthropology, University College London, London, United Kingdom", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "11:30-12:45", "type": "Oral session", "title": "Communication (1)", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "C-01", "time": "11:30-11:45", "title": "From calls to gestures: how common marmosets in the wild coordinate grooming interactions", "speaker": "Filipa ABREU", "aff": "Institute of Cognitive Science, Osnabrück University, Osnabrück, Germany", "video": false}, {"code": "C-02", "time": "11:45-12:00", "title": "Beyond Language: investigating compositionality in the cognition of Guinea baboons (Papio papio)", "speaker": "Thomas AUGIER", "aff": "Centre de Recherche en Psychologie et Neurosciences, UMR7077, Aix-Marseille Université, CNRS, Marseille, France", "video": false}, {"code": "C-03", "time": "12:00-12:15", "title": "Information in the acoustic structure of male chimpanzee pant-grunts", "speaker": "Montserrat BELINCHÓN", "aff": "Department of Psychobiology and Behavioural Research Methods, Complutense University of Madrid, Madrid, Spain", "video": false}, {"code": "C-04", "time": "12:15-12:30", "title": "What can baboons tell us about the evolution of language? A systematic and quantitative approach to intentionality and flexibility in animal communication", "speaker": "Elisa FERNÁNDEZ FUEYO", "aff": "Department of Biological Sciences, Royal Holloway, University of London, Egham, London, United Kingdom", "video": false}, {"code": "C-06", "time": "12:30-12:45", "title": "Development and plasticity of multimodal communication during the joint action of German children", "speaker": "Wytse WILHELM", "aff": "University of Tübingen, Tübingen, Germany", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "11:30-12:45", "type": "Oral session", "title": "Cognition & social learning (1)", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "CS-01", "time": "11:30-11:45", "title": "From emulation to overimitation: developmental patterns of human social learning in Agta hunter-gatherers", "speaker": "Deepshika ARUN", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "CS-02", "time": "11:45-12:00", "title": "Individual differences in and behavioral correlates of experimentally measured curiosity in wild Sumatran orangutans (Pongo abelii)", "speaker": "Siti Nur BADRIYAH", "aff": "Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "CS-03", "time": "12:00-12:15", "title": "Does the emotional valence of prior interactions with a demonstrator influence overimitation in children?", "speaker": "Rachel HARRISON", "aff": "Anthropology Department, Durham University, Durham, United Kingdom", "video": false}, {"code": "CS-04", "time": "12:15-12:30", "title": "Assessing social influences on emotional arousal in free-ranging Japanese macaques using thermal imaging", "speaker": "Miranda VENTRELLA", "aff": "C4D Lab, Durham University, Durham, United Kingdom", "video": false}, {"code": "CS-05", "time": "12:30-12:45", "title": "Comparing wild and captive cognition: testing environment affects novelty responses but not problem-solving performance in chimpanzees", "speaker": "Isabelle LAUMER", "aff": "Development and Evolution of Cognition, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "11:30-12:45", "type": "Oral session", "title": "Behavioral ecology (1)", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "BE-01", "time": "11:30-11:45", "title": "travelpaths: Simplifying and streamlining animal path analysis in R", "speaker": "Alison ASHBURY", "aff": "Department for the Ecology of Animal Societies, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}, {"code": "BE-02", "time": "11:45-12:00", "title": "Perspectivizing the nocturnal black box: nocturnal behavior patterns in wild Tibetan macaques", "speaker": "Peipei YANG", "aff": "Anhui University, Hefei, China", "video": false}, {"code": "BE-03", "time": "12:00-12:15", "title": "Nocturnal mating behavior in Tibetan macaques: the low-ranking male's path to mating success", "speaker": "Tong ZHANG", "aff": "Anhui University, Hefei, China", "video": false}, {"code": "BE-04", "time": "12:15-12:30", "title": "Variation in positional repertoire of Sifakas (Propithecus verreauxi) across three structurally distinct forests", "speaker": "Pauline WAGNER", "aff": "UMR 7206 - EA, CNRS-MHNH-UPC, Paris, France", "video": false}, {"code": "BE-05", "time": "12:30-12:45", "title": "Energetic evaluation of sifaka locomotion: A combined laboratory/field approach", "speaker": "François DRUELLE", "aff": "UMR 7268 ADES, Aix-Marseille Université, CNRS, EFS, Marseille, France", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "13:00-14:30", "type": "Break", "title": "Lunch", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "14:30-16:30", "type": "Symposium", "title": "Symposium 2 — Cutting-edge technologies for primate research, monitoring, and conservation", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S2-01", "time": "14:30-14:45", "title": "Primate-targeted xenosurveillance: a non-invasive tool for health monitoring", "speaker": "Gauthier RAWAY", "aff": "Research Unit SPHERES, Université de Liège, Liège, Belgium", "video": false}, {"code": "S2-02", "time": "14:45-15:00", "title": "Investigating the link between sociality, diet and microbiome in a wild primate using eDNA", "speaker": "Alba MOTES RODRIGO", "aff": "Laboratory for Conservation Biology (LBC), University of Lausanne, Lausanne, Switzerland", "video": false}, {"code": "S2-03", "time": "15:00-15:15", "title": "Integrating environmental and biologging technologies to reconstruct primate decision-making", "speaker": "Felipe BUFALO", "aff": "Laboratory of Primatology, São Paulo State University (Unesp), Rio Claro, São Paulo, Brazil", "video": false}, {"code": "S2-04", "time": "15:15-15:30", "title": "Optimizing nocturnal thermal-drone surveys for black-shanked douc langurs: calibration to ground distance sampling, gimbal-angle effects, and survey effort", "speaker": "Eva GAZAGNE", "aff": "Unit of Research SPHERES, University of Liège, Liège, Belgium", "video": false}, {"code": "S2-05", "time": "15:30-15:45", "title": "A new thermal lens on stress: facial blood-flow dynamics in chimpanzees revealed by infrared thermography", "speaker": "Perrine THEROUDE", "aff": "Comparative Cognition Group, University of Sussex, Brighton, United Kingdom", "video": false}, {"code": "S2-06", "time": "15:45-16:00", "title": "Can seed dispersal persist without spider monkeys? Primate visitation at Virola trees", "speaker": "Malika GOTTSTEIN", "aff": "Muséum national d'Histoire naturelle, Paris, France", "video": false}, {"code": "S2-07", "time": "16:00-16:15", "title": "Arboreal camera traps reveal spatiotemporal resource partitioning in an Atlantic Forest primate community", "speaker": "Olivier KAISIN", "aff": "Laboratory of Primatology, Universidade Estadual Paulista, Rio Claro, São Paulo, Brazil", "video": false}, {"code": "S2-08", "time": "16:15-16:30", "title": "Vocal activity patterns of threatened lemur species revealed through passive acoustic monitoring and deep learning", "speaker": "Daria VALENTE", "aff": "Department of Life Sciences and Systems Biology, University of Torino, Torino, Italy", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "14:30-16:30", "type": "Symposium", "title": "Symposium 3 — Primate communication, primate linguistics, and the evolution of language: current advances and future directions", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "", "time": "14:30-14:35", "title": "Introduction", "speaker": "Maël LEROUX", "aff": "Université de Rennes, Paimpont, France", "video": false}, {"code": "S3-01", "time": "14:35-14:45", "title": "Approaches to studying meaning in nonhuman animals", "speaker": "Mélissa BERTHET", "aff": "Department of Philosophy, Uni. Milan, Milan, Italy", "video": false}, {"code": "S3-02", "time": "14:45-14:55", "title": "Context matters: pragmatic competence in primate communication", "speaker": "Joseph MINE", "aff": "Centre d'Etude en Ethologie et Cognition (CEEC) - U.M.R 6552, University of Rennes, Paimpont, France", "video": false}, {"code": "S3-03", "time": "14:55-15:05", "title": "Syntax and compositionality in non-human primate vocal sequences", "speaker": "Auriane LE FLOCH", "aff": "Centre d'Etude en Ethologie et Cognition (CEEC), University of Rennes, Rennes, France", "video": false}, {"code": "S3-04", "time": "15:05-15:15", "title": "Importance and challenges of multimodality in primate communication research", "speaker": "Angèle LOMBREY", "aff": "Pathways to Language, University of Tubingen, Tubingen, Germany", "video": false}, {"code": "S3-05", "time": "15:15-15:25", "title": "Computational approaches to communicative combinatoriality and hierarchy", "speaker": "Elliot HOWARD-SPINK", "aff": "Department of Evolutionary Anthropology, University of Zürich & NCCR Evolving Language, Zürich, Switzerland", "video": false}, {"code": "", "time": "15:25-16:25", "title": "Roundtable", "speaker": "Moderators: Alban LEMASSON, Maël LEROUX & Florence LEVRÉRO", "aff": "Experts: Mélissa BERTHET, Elliot HOWARD-SPINK, Auriane LE FLOCH, Aurélie LE FUR, Angèle LOMPREY, Joseph MINE, Remo NIETSCHE, Nikhil PHANIRAJ, Stuart WATSON & Chiara ZULBERTI. Panelists: Judith BURKART, Catherine CROCKFORD, Adrien MEGUERDITCHIAN, Katie SLOCOMBE & Simon TOWNSEND", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "14:30-16:15", "type": "Oral session", "title": "Sociality (1)", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S-01", "time": "14:30-14:45", "title": "A comparison of power structures across chimpanzee communities", "speaker": "Gal BADIHI", "aff": "German Primate Center, Göttingen, Germany", "video": false}, {"code": "S-02", "time": "14:45-15:00", "title": "Wild chimpanzee groups increase social connectivity prior to risky collective action", "speaker": "James BROOKS", "aff": "Cooperative Evolution Lab, German Primate Center, Goettingen, Germany", "video": false}, {"code": "S-03", "time": "15:00-15:15", "title": "Evidence for emotional contagion of anxiety in Barbary macaques", "speaker": "Carina BRUCHMANN", "aff": "Department of Behavioral Ecology, University of Goettingen, Goettingen, Germany", "video": false}, {"code": "S-04", "time": "15:15-15:30", "title": "Probing the relative importance of interdependence on proactive prosociality in captive common marmosets", "speaker": "Rahel Katharina BRÜGGER", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "S-05", "time": "15:30-15:45", "title": "Social influences on maternal care behavior in mantled howler monkeys", "speaker": "Maud CZERWINSKI", "aff": "Primate Behavioral Ecology Lab, Instituto de Neuro-etología, Universidad Veracruzana, Xalapa, Mexico", "video": false}, {"code": "S-06", "time": "15:45-16:00", "title": "Why do baboon males associate with non-biological offspring?", "speaker": "Axelle DELAUNAY", "aff": "Department of Biology, University of Turku, Turku, Finland", "video": false}, {"code": "S-07", "time": "16:00-16:15", "title": "What affects male mating success? Exploring male mating strategies in wild bonobos at LuiKotale (DRC)", "speaker": "Francesca DECINA", "aff": "Department of Ecology of Animal Societies, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "14:30-16:15", "type": "Oral session", "title": "Genetics and genomics / Physiology, health, and disease (1)", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "GP-01", "time": "14:30-14:45", "title": "Genetic and behavioural repertoires support olfactory communication in wild capuchin monkeys", "speaker": "Amanda MELIN", "aff": "Anthropology and Archaeology, University of Calgary, Calgary, Alberta, Canada", "video": false}, {"code": "GP-02", "time": "14:45-15:00", "title": "Biased introgression of MHC class II alleles in the Alouatta palliata × A. pigra hybrid zone in Mexico", "speaker": "Liliana CORTÉS-ORTIZ", "aff": "Ecology and Evolutionary Biology & Anthropology, University of Michigan, Ann Arbor, Michigan, United States", "video": false}, {"code": "GP-03", "time": "15:00-15:15", "title": "Inflammaging changes predict phenotypic aging in Cayo Santiago rhesus macaques", "speaker": "Rachel NELSON", "aff": "Department of Anthropology, Center for the Study of Human Origins, New York University, New York, NY, United States", "video": false}, {"code": "GP-04", "time": "15:15-15:30", "title": "Embracing aging complexity from within-individual heterogeneity to non-linear age-associated trajectories", "speaker": "Baptiste SADOUGHI", "aff": "School of Life Sciences, Arizona State University, Tempe, AZ, United States", "video": false}, {"code": "GP-05", "time": "15:30-15:45", "title": "Behavioral effects on mammalian gut microbiomes", "speaker": "Anka (Ann-Kathrin) POHLE", "aff": "Department of Primate Behavior and Evolution - Social Microbiome Group, Max Planck Institute for Evolutionary Anthropology, Leipzig, Germany", "video": false}, {"code": "GP-06", "time": "15:45-16:00", "title": "Mechanisms of cryptic female choice in the vaginal tract of a nonhuman primate species", "speaker": "James HIGHAM", "aff": "New York University, New York, United States", "video": false}, {"code": "GP-07", "time": "16:00-16:15", "title": "Microbes and their metabolism in wild tamarin monkeys: exploring the potential role in olfactory social communication", "speaker": "Silvia CARBONI", "aff": "Department of Anthropology and Archeology, University of Calgary, Calgary, AB, Canada", "video": false}], "note": ""}, {"day": "Tuesday 30 June", "time": "16:30-17:00", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "17:00-19:00", "type": "Poster", "title": "Posters session", "room": "", "chairs": "", "talks": [], "note": ""}, {"day": "Tuesday 30 June", "time": "19:00-21:00", "type": "Social", "title": "Pongo bingo: early career networking event", "room": "Broc-Café", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "08:00-09:00", "type": "Break", "title": "Coffee", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "09:00-10:00", "type": "Plenary", "title": "Plenary 3", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "KN-03", "time": "09:00-10:00", "title": "Tracing cooperation across ape societies", "speaker": "Liran SAMUNI", "aff": "German Primate Center, Göttingen, Germany", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "10:00-10:30", "type": "Flash talks", "title": "Flash talks 2", "room": "", "chairs": "Chairs: TBC", "talks": [{"code": "FT-07", "time": "10:00-10:05", "title": "Does female mate preference change during ovulation? Insights from salivary hormone measures in wild vervet monkeys", "speaker": "Maria GRANELL RUIZ", "aff": "Eco-Ethology, University Neuchâtel, Neuchâtel, Switzerland", "video": false}, {"code": "FT-08", "time": "10:05-10:10", "title": "Nipple manipulation and sub-adult suckling in a group of orphaned chimpanzees (Pan troglodytes verus) in a sanctuary environment", "speaker": "Claire MAWDSLEY", "aff": "Faculty of Arts, Humanities, and Social Sciences, Oxford Brookes University, Oxford, United Kingdom", "video": false}, {"code": "FT-09", "time": "10:10-10:15", "title": "Guinea baboons strategically use punishment and partner choice to promote cooperation", "speaker": "Rayanne MARTIN", "aff": "CRPN, Aix-Marseille Université, Marseille, France", "video": false}, {"code": "FT-10", "time": "10:15-10:20", "title": "ABO blood group typing in primates and verification of a point-of-care technique for use in great apes and gibbons", "speaker": "Natasja DE GROOT", "aff": "Genetics group, BPRC, Rijswijk, Netherlands", "video": false}, {"code": "FT-11", "time": "10:20-10:25", "title": "Gastrointestinal parasites of black lion tamarins (Leontopithecus chrysopygus) along a gradient of anthropogenic disturbances", "speaker": "Olga SZCZODRY", "aff": "Behavioural Biology Unit / RU SPHERES, Liège University, Liège, Belgium", "video": false}, {"code": "FT-12", "time": "10:25-10:30", "title": "Humans and chimpanzees use the same plants to treat the same symptoms (Taï: Southwest, Côte d'Ivoire)", "speaker": "Alphonse BI ZAH", "aff": "Centre Suisse de Recherche Scientifique en Côte d'Ivoire, Abidjan, Côte d'Ivoire", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "10:30-11:00", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "11:00-13:00", "type": "Symposium", "title": "Symposium 4 — The levels of power: from individual behavioral strategies to systemic social inequality", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: Eve DAVIDIAN & Daniel REDHEAD", "talks": [{"code": "", "time": "11:00-11:05", "title": "Introduction to the symposium", "speaker": "Eve DAVIDIAN", "aff": "Evolutionary Anthropology, ISEM, University of Montpellier, Montpellier, France", "video": false}, {"code": "S4-01", "time": "11:05-11:20", "title": "Voluntary servitude vs. revolutionary coalitions: when and why subordinates accept or reject rank-related differences and inequality", "speaker": "Bonaventura MAJOLO", "aff": "School of Psychology, Sport Science & Wellbeing, University of Lincoln, Lincoln, United Kingdom", "video": false}, {"code": "S4-02", "time": "11:20-11:35", "title": "Intersubjective representations of dominance hierarchy in macaques", "speaker": "Romain LIGNEUL", "aff": "Centre de Recherche en Neuroscience de Lyon, INSERM, Bron, France", "video": false}, {"code": "S4-03", "time": "11:35-11:50", "title": "The network structure of leadership behaviours among Taiwanese children", "speaker": "Daniel REDHEAD", "aff": "Department of Sociology, University of Groningen, Groningen, Netherlands", "video": false}, {"code": "S4-04", "time": "11:50-12:05", "title": "Mechanisms of reproductive inequality in chimpanzees: a developmental perspective", "speaker": "Leveda CHENG", "aff": "School of Psychology and Neuroscience, University of St Andrews, St Andrews, United Kingdom", "video": false}, {"code": "S4-05", "time": "12:05-12:20", "title": "Maintaining the balance of power within animal groups through levelling behaviours", "speaker": "Danai PAPAGEORGIOU", "aff": "Humboldt University of Berlin, Berlin, Germany", "video": false}, {"code": "S4-06", "time": "12:20-12:25", "title": "Social status as a developmental process in wild vervet monkeys: beyond maternal inheritance", "speaker": "Chloé VILETTE", "aff": "Psychology, University of Lethbridge, Lethbridge, Canada", "video": false}, {"code": "S4-07", "time": "12:25-12:30", "title": "Dominance hierarchies are structured similarly in females and males across primate groups", "speaker": "Lucas SPICHER", "aff": "Laboratory of Cognitive and Adaptative Neurosciences (LNCA), University of Strasbourg, Strasbourg, France", "video": false}, {"code": "S4-08", "time": "12:30-12:35", "title": "Fluctuations in hierarchical steepness: Analysis of temporal, environmental, and demographic variations in wild chacma baboons (Papio ursinus)", "speaker": "Florian GUYADER", "aff": "ISEM, Université des Sciences de Montpellier, Montpellier, France", "video": false}, {"code": "S4-09", "time": "12:35-12:40", "title": "They got great personality - individual differences in hierarchical behavior in Chacma baboons", "speaker": "Tal KLEINHAUSE-GEDALYAHOU GOLDMAN", "aff": "Institute of Evolutionary Science of Montpellier (ISEM), University of Montpellier, Montpellier, France", "video": false}, {"code": "S4-10", "time": "12:40-12:45", "title": "The effects of dominance rank on male reproductive success in social mammals", "speaker": "Dieter LUKAS", "aff": "Max Planck Institute for Evolutionary Anthropology, Leipzig, Germany", "video": false}, {"code": "", "time": "12:45-13:00", "title": "Roundtable discussion", "speaker": "Chairs: Eve DAVIDIAN & Daniel REDHEAD", "aff": "", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "11:00-12:45", "type": "Oral session", "title": "Communication (2)", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "C-07", "time": "11:00-11:15", "title": "Effects of risk and cost of misunderstandings on the use of stereotypical facial communication", "speaker": "Peter CLARK", "aff": "School of Psychology, Sport Sciences and Wellbeing, University of Lincoln, Lincoln, United Kingdom", "video": false}, {"code": "C-08", "time": "11:15-11:30", "title": "Emergence of individual singing patterns through rhythmic analyses and recurrence plots", "speaker": "Marco GAMBA", "aff": "Life Sciences and Systems Biology, University of Torino, Torino, Italy", "video": false}, {"code": "C-09", "time": "11:30-11:45", "title": "Dual sound sources in siamangs generate rhythmic vocal emissions", "speaker": "Lia LAFFI", "aff": "University of Turin, Turin, Italy", "video": false}, {"code": "C-10", "time": "11:45-12:00", "title": "Collective rhythm in non-human primate duet singing", "speaker": "Silvia LEONETTI", "aff": "Department of Life Sciences and Systems Biology, University of Turin, Torino, Italy", "video": false}, {"code": "C-11", "time": "12:00-12:15", "title": "Interactional success: the use of repair mechanisms in East African chimpanzees", "speaker": "Kayla KOLFF", "aff": "Osnabrück University, Osnabrück, Germany", "video": false}, {"code": "C-12", "time": "12:15-12:30", "title": "Social influence on multimodal communication in a Neotropical primate", "speaker": "Sabrina NASCIMENTO", "aff": "Laboratory of Ethnobiology, Ethology and Conservation, Federal Rural University of Pernambuco, Recife, Pernambuco, Brazil", "video": false}, {"code": "C-13", "time": "12:30-12:45", "title": "Communicative efforts to solve conflicts are shaped by relationship value, emotions, and risk in wild geladas", "speaker": "Luca PEDRUZZI", "aff": "Centre d'Etude en Ethologie et Cognition (CEEC) - U.M.R 6552, Université de Rennes, Rennes, France", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "11:00-12:45", "type": "Oral session", "title": "Behavioral ecology (2)", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "BE-06", "time": "11:00-11:15", "title": "How a landscape of fear shapes chimpanzee foraging across territorial boundaries", "speaker": "Noah ATKIN", "aff": "Cooperative Evolution, German Primate Center, Göttingen, Germany", "video": false}, {"code": "BE-07", "time": "11:15-11:30", "title": "Socioecology and the role of scramble competition", "speaker": "Andreas BERGHÄNEL", "aff": "Zoology and animal ecology, University of Hildesheim, Hildesheim, Germany", "video": false}, {"code": "BE-08", "time": "11:30-11:45", "title": "Rock with me: how social interaction shapes spontaneous motor tempo in baboons' stone rubbing", "speaker": "Siham BOUZIANE", "aff": "CRPN, UMR 7077, AMU, CNRS, Marseille, France", "video": false}, {"code": "BE-09", "time": "11:45-12:00", "title": "Risk-taking in grey mouse lemurs (Microcebus murinus)", "speaker": "Heike LAHUSEN", "aff": "Institute of Zoology, University of Veterinary Medicine Hannover, Foundation, Hannover, Germany", "video": false}, {"code": "BE-10", "time": "12:00-12:15", "title": "Risk-prone foraging and social-grouping in eastern chimpanzees (P. t. schweinfurthii)", "speaker": "Harmonie KLEIN", "aff": "Wild Minds lab, University of St Andrews, School of Psychology and Neuroscience, St Andrews, United Kingdom", "video": false}, {"code": "BE-11", "time": "12:15-12:30", "title": "When the foot replaces the infant: a case for communicative pretending in Barbary macaques?", "speaker": "Clémence LOCHIN", "aff": "Laboratoire Eco-anthropologie (EA), UMR 7206, MNHN, CNRS, Université Paris Cité, Paris, France", "video": false}, {"code": "BE-12", "time": "12:30-12:45", "title": "Approach me if you can! How social density, composition and behavioural state modulate approach decisions in crested macaques (Macaca nigra)", "speaker": "Adam PROVIN", "aff": "UMR7206 Eco Anthropology, Muséum National d'Histoire Naturelle - CNRS, Paris, France", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "11:00-12:30", "type": "Oral session", "title": "Evolution and phylogeny (1)", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "EP-01", "time": "11:00-11:15", "title": "Evolutionary origin of Tarsius pelengensis", "speaker": "Miguel CAMACHO SÁNCHEZ", "aff": "iomE, Anthropology, Johannes Gutenberg Universität Mainz, Mainz, Germany", "video": false}, {"code": "EP-02", "time": "11:15-11:30", "title": "Demographic buffering of adult mortality in primates: evidence from a comparative life-history study across mammals", "speaker": "Jad DAOU", "aff": "Primate Behavior and Evolution, Max Planck Institute for Evolutionary Anthropology, Leipzig, Sachsen, Germany", "video": false}, {"code": "EP-03", "time": "11:30-11:45", "title": "Beyond pedigrees: realised relatedness shapes social behaviour in rhesus macaques", "speaker": "Annika FREUDIGER", "aff": "Leipzig University, Leipzig, Germany", "video": false}, {"code": "EP-04", "time": "11:45-12:00", "title": "Ancestral range estimation and population structure of Sulawesi tarsiers", "speaker": "Laura HAGEMANN", "aff": "Johannes Gutenberg University, Mainz, Germany", "video": false}, {"code": "EP-05", "time": "12:00-12:15", "title": "Neither the Andean night monkey is entirely Andean, nor is the Caribbean night monkey entirely Caribbean: Phylogeography of night monkeys in northern South America", "speaker": "Sebastián MONTILLA", "aff": "Laboratorio de Ecología de Bosques Tropicales y Primatología, Fundación Proyecto Primates Colombia, Bogotá D.C., Colombia", "video": false}, {"code": "EP-06", "time": "12:15-12:30", "title": "Cochlear evolution in primates: assessing the influence of phylogeny and functional requirements", "speaker": "Myriam MARSOT", "aff": "UMR 6282 CNRS/uBe/EPHE Biogéosciences, Université Bourgogne Europe, Dijon, France", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "13:00-14:30", "type": "Break", "title": "Lunch", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "14:30-16:30", "type": "Symposium", "title": "Symposium 5 — Human-primate co-existence", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S5-01", "time": "14:30-14:45", "title": "Primate exaptation to anthropogenic environments", "speaker": "Sofia FORSS", "aff": "Department of Evolutionary Biology and Environmental Studies, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "S5-02", "time": "14:45-15:00", "title": "Cultural stone-play and stone-tool use in long-tailed macaques living in anthropogenic habitats", "speaker": "Camilla CENNI", "aff": "Psychology, University of Mannheim, Mannheim, Germany", "video": false}, {"code": "S5-03", "time": "15:00-15:15", "title": "Cultural contexts shape human–capuchin coexistence in Brazil", "speaker": "Patrícia IZAR", "aff": "Experimental Psychology, Universidade de São Paulo, Sao Paulo, Brazil", "video": false}, {"code": "S5-04", "time": "15:15-15:30", "title": "Living with urban fear: vervet monkey response to an evolutionarily new predator", "speaker": "Benjamin ROBIRA", "aff": "Dpt of Evolutionary Biology and Environmental Studies, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "S5-05", "time": "15:30-15:45", "title": "Road use patterns by olive baboons on an asphalt road crossing Kibale National Park, Uganda", "speaker": "Louise ROBINET", "aff": "Laboratoire de Psychologie Sociale et Cognitive UMR 6024 Équipe Éthologie Social, Université Clermont Auvergne, Clermont-Ferrand, France", "video": false}, {"code": "S5-06", "time": "15:45-16:00", "title": "Risk it for the 'biscuit': combining a risk-taking experiment with behavioral data to measure personality in semi-urban vervet monkeys (Chlorocebus pygerythrus)", "speaker": "Valeria SIMEONOVA", "aff": "Graduate School of Life Sciences, Animal Behaviour and Cognition Group, Utrecht University, Utrecht, Netherlands", "video": false}, {"code": "S5-07", "time": "16:00-16:15", "title": "Effects of female sterilization on social and sexual interactions in synanthropic long-tailed macaques (Macaca fascicularis)", "speaker": "Gwennan GIRAUD", "aff": "Research Unit SPHERES, Department of Biology, Ecology and Evolution, University of Liege, Liege, Belgium", "video": false}, {"code": "", "time": "16:15-16:30", "title": "Discussion round", "speaker": "", "aff": "", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "14:30-16:30", "type": "Symposium", "title": "Symposium 6 — Personality & cognition", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S6-01", "time": "14:30-14:45", "title": "Association between personality differences and dyadic cooperation in macaque societies", "speaker": "Debottam BHATTACHARJEE", "aff": "Department of Behavioral Ecology, University of Göttingen, Göttingen, Germany", "video": false}, {"code": "S6-02", "time": "14:45-15:00", "title": "Assessing personality in macaques: a cross method validation and cross species comparison of behavioural observations and caretaker ratings", "speaker": "Tieme DOLSTRA", "aff": "Animal behaviour and cognition, Utrecht University, Utrecht, Netherlands", "video": false}, {"code": "S6-03", "time": "15:00-15:15", "title": "Curiosity in grey mouse lemurs (Microcebus murinus): repeatability of exploration and links with cognitive performance", "speaker": "Arnout LINDEMAN", "aff": "Behavioural Ecology & Sociobiology Unit, German Primate Center, Göttingen, Germany", "video": false}, {"code": "S6-04", "time": "15:15-15:30", "title": "Who takes the risk to forage? Testing consistent individual behavioural variation in wild vervet monkeys (Chlorocebus pygerythrus)", "speaker": "Charlotte CANTELOUP", "aff": "Inkawu Vervet Project, Swart-Mfolozi, South Africa; Conserving Wild, Strasbourg, France", "video": false}, {"code": "S6-05", "time": "15:30-15:45", "title": "Multisensory communication and personality in wild vervet monkeys (Chlorocebus pygerythrus) using VerTIGo touchscreen system", "speaker": "Vedrana ŠLIPOGOR", "aff": "Institute of Microbiology, Lausanne University Hospital, Lausanne, Switzerland", "video": false}, {"code": "S6-06", "time": "15:45-16:00", "title": "Acquisition and use of social information in wild Assamese macaques", "speaker": "Sofia PEREIRA", "aff": "Department for Behavioral Ecology, Göttingen University, Göttingen, Germany", "video": false}, {"code": "S6-07", "time": "16:00-16:15", "title": "Ratings, reliability, and circularity: rethinking personality–cognition links in nonhuman primates", "speaker": "Julia FISCHER", "aff": "Cognitive Ethology Lab, German Primate Center, Goettingen, Germany", "video": false}, {"code": "", "time": "16:15-16:30", "title": "Discussion round", "speaker": "", "aff": "", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "14:30-16:15", "type": "Oral session", "title": "Cognition & social learning (2)", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "CS-06", "time": "14:30-14:45", "title": "Tool use traditions in robust capuchin monkeys: diversity and ecology", "speaker": "Tiago FALÓTICO", "aff": "Neotropical Primates Research Group, São Paulo, SP, Brazil", "video": false}, {"code": "CS-07", "time": "14:45-15:00", "title": "Sequential tool use in chimpanzees: experimental evidence for socially mediated technical strategies", "speaker": "Saray PASCUAL-MOLINER", "aff": "Departament d'Història i Història de l'Art, Universitat Rovira i Virgili, Tarragona, Spain", "video": false}, {"code": "CS-08", "time": "15:00-15:15", "title": "Stone tool use facilitates structured handedness in wild macaques", "speaker": "Rohit NEGI", "aff": "Technological Primates Research Group, Max Planck Institute for Evolutionary Anthropology, Leipzig, Saxony, Germany", "video": false}, {"code": "CS-09", "time": "15:15-15:30", "title": "Shiny reflective object manipulation in Gibraltar Barbary macaques: a novel hedonistic primate tradition", "speaker": "Martin NICOURT", "aff": "Muséum National d'Histoire Naturelle, Paris, France", "video": false}, {"code": "CS-10", "time": "15:30-15:45", "title": "Do social tolerance, age and rank shape neophobia in two macaque species?", "speaker": "Théo LEMEUX", "aff": "Laboratory of Cognitive and Adaptative Neurosciences (LNCA), University of Strasbourg, Strasbourg, France", "video": false}, {"code": "CS-11", "time": "15:45-16:00", "title": "Behavioural variability in leaf-clipping in neighbouring wild chimpanzee communities", "speaker": "Marine CUVILLIEZ", "aff": "Ape Social Mind Lab, Institute of Cognitive Sciences UMR 5229 CNRS / University of Lyon 1, Bron, France", "video": false}, {"code": "CS-12", "time": "16:00-16:15", "title": "Play, objects, and social minds: a framework for studying triadic engagement in bonobos", "speaker": "Elisa DEMURU", "aff": "Department of Philosophy, Communication and Performing Arts, Roma Tre University, Rome, Italy", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "14:30-16:00", "type": "Oral session", "title": "Physiology, health, and disease (2)", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "GP-08", "time": "14:30-14:45", "title": "Exploring microbial contribution to reproductive olfactive communication in wild tamarins (Callitrichidae)", "speaker": "Alice POIRIER", "aff": "Development of Olfactory Communication & Cognition Lab, Université Bourgogne Europe, CNRS, INRAE & Institut Agro Dijon, UMR CSGA, Dijon, France", "video": false}, {"code": "GP-09", "time": "14:45-15:00", "title": "Phylogeny, diet and habitat determine gut microbiota patterns of Mexican primates inhabiting a gradient of ex situ conditions", "speaker": "Ella VÁZQUEZ-DOMÍNGUEZ", "aff": "Instituto de Ecología, Universidad Nacional Autónoma de México, Ciudad de Mexico, Mexico", "video": false}, {"code": "GP-10", "time": "15:00-15:15", "title": "Too similar yet too different: a comparison of parasite loads between varied white-faced capuchins (Cebus versicolor) and black-capped capuchin (Sapajus apella)", "speaker": "Nelson GALVIS", "aff": "Animal Behavior, Max Planck Institute, Konstanz, Germany", "video": false}, {"code": "GP-11", "time": "15:15-15:30", "title": "Parasite transmission risk at the urban human-macaque-dog interface", "speaker": "Laëtitia MARÉCHAL", "aff": "University of Lincoln, Lincoln, Lincolnshire, United Kingdom", "video": false}, {"code": "GP-12", "time": "15:30-15:45", "title": "Testing the dilution effect on the gastrointestinal parasites of a Bornean primate community", "speaker": "Kenneth KEUK", "aff": "Kyoto University, Inuyama, Japan", "video": false}, {"code": "GP-13", "time": "15:45-16:00", "title": "Wounds and wound-tending behaviours: an integrated framework and its application to Central-African chimpanzees and beyond", "speaker": "Alessandra MASCARO", "aff": "Comparative BioCognition, Institute of Cognitive Sciences, Osnabrück, Germany", "video": false}], "note": ""}, {"day": "Wednesday 1 July", "time": "16:30-17:00", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "17:00-19:00", "type": "Other", "title": "National Societies' Assemblies — EFP (Board members only)", "room": "Panathénées room — MSH-Sud", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "17:00-19:00", "type": "Other", "title": "National Societies' Assemblies — GfP", "room": "Kouros room — MSH-Sud", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "17:00-19:00", "type": "Other", "title": "National Societies' Assemblies — SFDP", "room": "Auditorium — MSH-Sud", "chairs": "", "talks": [], "note": ""}, {"day": "Wednesday 1 July", "time": "19:00-21:00", "type": "Social", "title": "Paths & perspectives: connecting across career stages", "room": "Broc-Café", "chairs": "", "talks": [], "note": ""}, {"day": "Thursday 2 July", "time": "08:00-09:00", "type": "Break", "title": "Coffee", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Thursday 2 July", "time": "09:00-10:00", "type": "Plenary", "title": "Plenary 4", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "KN-04", "time": "09:00-10:00", "title": "Primatologists at the front line: tackling wildlife trafficking on the Colombian–Peruvian Amazon border: the case of the Nancy Ma's night monkeys", "speaker": "Angela MALDONADO", "aff": "Fundación Entropika, Leticia, Amazonas, Colombia", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "10:00-10:30", "type": "Flash talks", "title": "Flash talks 3", "room": "", "chairs": "Chairs: TBC", "talks": [{"code": "FT-13", "time": "10:00-10:05", "title": "Function of babbling in common marmosets (Callithrix jacchus)", "speaker": "Konatsu ONO", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zürich, Switzerland", "video": false}, {"code": "FT-14", "time": "10:05-10:10", "title": "How high to be heard? Vertical positioning and vocal communication in mandrills", "speaker": "Lorine GRANGY", "aff": "ENES Lab, Université Jean Monnet, CRNL, Saint-Etienne, Loire, France", "video": false}, {"code": "FT-15", "time": "10:10-10:15", "title": "Deep learning for nocturnal primate research: automating 'cry' loud call detection in Otolemur crassicaudatus", "speaker": "Laetitia CONFURON", "aff": "Biogéosciences UMR 6282 CNRS - EPHE, Université Bourgogne Europe, Dijon, France", "video": false}, {"code": "FT-16", "time": "10:15-10:20", "title": "Validation of passive acoustic monitoring in wild chimpanzees: a tool for evaluating the complexity of their combinatorial communication system", "speaker": "Francesco ZAMBIANCHI", "aff": "ENES Bioacoustics Research Laboratory, Université Jean Monnet Saint-Etienne, Saint-Etienne, France", "video": false}, {"code": "FT-17", "time": "10:20-10:25", "title": "Individual differences and environmental determinants of human–baboon conflict in Namibia", "speaker": "Punaete KANDJII", "aff": "Tsaobis Baboon Project, Tsaobis Nature Park, Erongo, Namibia", "video": false}, {"code": "FT-18", "time": "10:25-10:30", "title": "Humans and chimpanzees show common vocal signatures of emotion", "speaker": "Bruno MARCOS", "aff": "Faculty of Psychology and Educational Sciences, University of Geneva, Geneva, Switzerland", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "10:30-11:00", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Thursday 2 July", "time": "11:00-13:00", "type": "Symposium", "title": "Symposium 7 — Communication for coordination", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S7-01", "time": "11:00-11:15", "title": "Joint action in human and nonhuman primates", "speaker": "Raphaela HEESEN", "aff": "Department of Biology, Centre for the Advanced Study of Collective Behaviour, University of Konstanz, Konstanz, Germany", "video": false}, {"code": "S7-02", "time": "11:15-11:30", "title": "Syntax of interactions: a conceptual framework for investigating the structure of social interactions across species", "speaker": "Bas VAN BOEKHOLT", "aff": "Department of Evolutionary Anthropology, University of Zürich, Zürich, Switzerland", "video": false}, {"code": "S7-03", "time": "11:30-11:45", "title": "Investigating interactional synchrony as a mechanism underlying joint commitment in apes", "speaker": "Arthur TOUCHAIS", "aff": "Department of Biology, Konstanz University, Konstanz, Germany", "video": false}, {"code": "S7-04", "time": "11:45-12:00", "title": "Chimpanzees communicate to coordinate a cultural practice: extending evidence from grooming handclasp interactions", "speaker": "Zoë GOLDSBOROUGH", "aff": "Max Planck Institute of Animal Behavior, Radolfzell, Germany", "video": false}, {"code": "S7-05", "time": "12:00-12:15", "title": "Chimpanzee communication in cooperative tasks: bottlenecks in signal production and comprehension", "speaker": "Alicia MELIS", "aff": "Experimental Psychology, UCL, London, England, United Kingdom", "video": false}, {"code": "S7-06", "time": "12:15-12:30", "title": "Vocal communication during cooperative and competitive coordination in common marmosets (Callithrix jacchus)", "speaker": "Adele TUOZZI", "aff": "Evolutionary Anthropology (IEA), University of Zurich, Zürich, Switzerland", "video": false}, {"code": "S7-07", "time": "12:30-12:45", "title": "Familiarity shapes the spread of positive affect in bonobos within and across species", "speaker": "Floriane FOURNIER", "aff": "ENES bioacoustic research lab, Université Jean-Monnet, Saint-Etienne, France", "video": false}, {"code": "S7-08", "time": "12:45-12:50", "title": "Our closest lying relatives? Deceptive vocal signals in cooperatively hunting chimpanzees", "speaker": "Stuart WATSON", "aff": "University of Zürich, Zürich, Switzerland", "video": false}, {"code": "", "time": "12:50-13:00", "title": "Discussion", "speaker": "", "aff": "", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "11:00-12:45", "type": "Symposium", "title": "Symposium 8 — Dr Sonja Koski's research legacy: from chimpanzee conflicts to human-horse relationships", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S8-01", "time": "11:00-11:15", "title": "Dr Sonja Koski: a true intellectual octopus", "speaker": "Kathelijne KOOPS", "aff": "Ape Behaviour & Ecology Group, Department of Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "S8-02", "time": "11:15-11:30", "title": "Social complexity and power in primates: (in)dependencies of social strategies to access different types of resources", "speaker": "Liesbeth STERCK", "aff": "Utrecht University, Utrecht, Netherlands", "video": false}, {"code": "S8-03", "time": "11:30-11:45", "title": "The good-enough mother - maternal sensitivity and the evolutionary roots of socioemotional development in wild bonobos", "speaker": "Zanna CLAY", "aff": "Department of Psychology, Durham University, Durham, United Kingdom", "video": false}, {"code": "S8-04", "time": "11:45-12:00", "title": "The pan-to-mimic effect: are chimpanzees facilitated into socio-positive behaviors by their group-members?", "speaker": "Edwin VAN LEEUWEN", "aff": "Primate Culture Origins Group, Utrecht University, Utrecht, Netherlands", "video": false}, {"code": "S8-05", "time": "12:00-12:15", "title": "Tuned for social interaction: from marmoset group personalities to language evolution", "speaker": "Judith BURKART", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zürich, Switzerland", "video": false}, {"code": "S8-06", "time": "12:15-12:30", "title": "Opening the gate of social minds - A tribute to Sonja Koski", "speaker": "Elisabetta PALAGI", "aff": "Unit of Ethology, Department of Biology, University of Pisa, Pisa, Italy", "video": false}, {"code": "S8-07", "time": "12:30-12:45", "title": "Is peripheral oxytocin a reliable indicator of positive social experiences in animals? Making sense of the evidence from primates to horses", "speaker": "Liza MOSCOVICE", "aff": "Psychophysiology, Research Institute for Farm Animal Biology, Dummerstorf, Germany", "video": false}, {"code": "S8-08", "time": "12:45-13:00", "title": "Empathy is not enough for interspecific understanding", "speaker": "Emma VITIKAINEN", "aff": "Department of Organismal and Evolutionary Biology, University of Helsinki, Helsinki, Finland", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "11:00-12:45", "type": "Oral session", "title": "Ecology and conservation (1)", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "EC-01", "time": "11:00-11:15", "title": "Ecological and genetic assessment of orphaned endemic langurs to evaluate full release feasibility on a nearby sanctuary island", "speaker": "Margaux BARET", "aff": "Arkasia Foundation, Pengudang, Indonesia", "video": false}, {"code": "EC-02", "time": "11:15-11:30", "title": "Lessons learned from 25 years of small ape conservation science and action in Indonesia", "speaker": "Susan CHEYNE", "aff": "Borneo Nature Foundation, Lewes, East Sussex, United Kingdom", "video": false}, {"code": "EC-03", "time": "11:30-11:45", "title": "High uncertainty in chimpanzee demography from one-year camera trap survey - Consequences for impact assessments", "speaker": "Benjamin DEBETENCOURT", "aff": "Wild Chimpanzee Foundation, Conakry, Guinea", "video": false}, {"code": "EC-04", "time": "11:45-12:00", "title": "Human-bonobo coexistence in a landscape mosaic, Maï-Ndombe Province, DR Congo", "speaker": "Salomé DOVAL", "aff": "UMR7206 Eco-anthropologie, CNRS/MNHN/UPCité, Paris, France", "video": false}, {"code": "EC-05", "time": "12:00-12:15", "title": "From trade to lifetime care: the demographic and financial legacy over a century of chimpanzee trafficking in Spain", "speaker": "Olga FELIU", "aff": "Research department, Fundació MONA, Riudellots de la Selva-Girona, Catalunya, Spain", "video": false}, {"code": "EC-06", "time": "12:15-12:30", "title": "On the pursuit of the hotspots of illegal trade of primates in Colombia using non-invasive samples", "speaker": "Manuel FONSECA", "aff": "University of Tübingen, Tübingen, Germany", "video": false}, {"code": "EC-07", "time": "12:30-12:45", "title": "Short term assessment of the first reintroduction of Barbary macaque in Tazekka national park (Morocco)", "speaker": "Pascaline LE GOUAR", "aff": "UMR 6553 EcoBio, University Rennes, Paimpont, France", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "11:00-12:45", "type": "Oral session", "title": "Cognition & social learning (3)", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "CS-13", "time": "11:00-11:15", "title": "Touchscreen training in captive orangutans (Pongo pygmaeus): issues, solutions, and a few twists along the way", "speaker": "Raphaelle MALASSIS", "aff": "Laboratory of Cognitive Science and Psycholinguistics, CNRS / ENS-PSL, Paris, France", "video": false}, {"code": "CS-14", "time": "11:15-11:30", "title": "How do great apes respond to distorted versions of their own reflection?", "speaker": "Souha Tanit AZAIEZ", "aff": "Centre d'Étude en Éthologie et Cognition (CEEC) UMR CNRS 6552, Université de Rennes, Rennes, France", "video": false}, {"code": "CS-15", "time": "11:30-11:45", "title": "To open or not to open: a judgment bias task for non-human primates", "speaker": "Aurore SERDA", "aff": "Laboratory of Cognitive and Adaptive Neurosciences, University of Strasbourg, Strasbourg, France", "video": false}, {"code": "CS-16", "time": "11:45-12:00", "title": "Exploring the relationship between social learning and social tolerance in primates", "speaker": "Nivedita SHANKAR", "aff": "Department of Biological Sciences, Indian Institute of Science Education and Research Mohali, Mohali, Punjab, India", "video": false}, {"code": "CS-17", "time": "12:00-12:15", "title": "Social determinants of social and individual learning in wild chimpanzees", "speaker": "Nora SLANIA", "aff": "Development and Evolution of Cognition Research Group, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}, {"code": "CS-18", "time": "12:15-12:30", "title": "Inventiveness in chacma baboons", "speaker": "Mathilde TAHAR", "aff": "Department of Anthropology, University College London, London, United Kingdom", "video": false}, {"code": "CS-19", "time": "12:30-12:45", "title": "Multi-year social and asocial learning propensities during infancy synergistically shape ecological competence in juvenile Sumatran orangutans", "speaker": "Revathe THILLAIKUMAR", "aff": "Development and Evolution of Cognition Group, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "13:00-14:30", "type": "Break", "title": "Lunch", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Thursday 2 July", "time": "14:30-17:00", "type": "Symposium", "title": "Symposium 9 — From consensus to discovery: a new era of primate culture research", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "S9-01", "time": "14:30-14:45", "title": "Ape cultural research: more agreements than disagreements", "speaker": "Claudio TENNIE", "aff": "Human Origins Cluster of Excellence, University of Tübingen, Tübingen, Germany", "video": false}, {"code": "S9-02", "time": "14:45-15:00", "title": "What can data from captive chimpanzees tell us about general chimpanzee cognition?", "speaker": "Elisa BANDINI", "aff": "The University of Algarve, Faro, Portugal", "video": false}, {"code": "S9-03", "time": "15:00-15:15", "title": "The cultural reproduction of ape tool skills: experimental approaches", "speaker": "Dietrich STOUT", "aff": "Department of Anthropology, Emory University, Atlanta, GA, United States", "video": false}, {"code": "S9-04", "time": "15:15-15:30", "title": "Imitation in wild chimpanzee tool use acquisition", "speaker": "Oscar NODE-LANGLOIS", "aff": "ISC, CNRS, Bron, France", "video": false}, {"code": "S9-05", "time": "15:30-15:45", "title": "Rise and fall of chimpanzee cultures", "speaker": "Roman WITTIG", "aff": "Ape Social Mind Lab, Institute of Cognitive Sciences UMR 5229 CNRS / University Lyon 1, Bron, France", "video": false}, {"code": "S9-06", "time": "15:45-16:00", "title": "Scope and limitations of vervet monkey culture: insights from a 15-year database and field experiments", "speaker": "Erica VAN DE WAAL", "aff": "Institute of Biology, University of Neuchâtel, Neuchâtel, Switzerland", "video": false}, {"code": "S9-07", "time": "16:00-16:15", "title": "The developmental period as a window into great ape cultural processes and the extent of cultural repertoires", "speaker": "Caroline SCHUPPLI", "aff": "Development and Evolution of Cognition Research Group, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}, {"code": "S9-08", "time": "16:15-16:30", "title": "Can culture save the chimpanzee? The role of culture science in an age of loss", "speaker": "Erin WESSLING", "aff": "MPI-EVAN & German Centre for Integrative Biodiversity Research (iDiv), Leipzig, Germany", "video": false}, {"code": "", "time": "16:30-17:00", "title": "Q&A of all speakers", "speaker": "", "aff": "", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "14:30-16:45", "type": "Oral session", "title": "Communication (3)", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "C-14", "time": "14:30-14:45", "title": "Does sexual dimorphism constrain facial expression? Evidence from Chacma baboons", "speaker": "Richard McFARLAND", "aff": "Nottingham Trent University, Nottingham, United Kingdom", "video": false}, {"code": "C-15", "time": "14:45-15:00", "title": "In synch or out of tune? Relationship quality and dyadic vocal dynamics in captive common marmosets (Callithrix jacchus)", "speaker": "Monika MIRCHEVA", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "C-16", "time": "15:00-15:15", "title": "Not so fast: testing Zipf's law of brevity in wild great ape and children's gestures", "speaker": "Alexandra SAFRYGHIN", "aff": "School of Psychology and Neuroscience, University of St Andrews, St Andrews, United Kingdom", "video": false}, {"code": "C-17", "time": "15:15-15:30", "title": "Are pan alarm calls produced intentionally? A direct comparison of bonobo and chimpanzee alarm calling behaviour in response to snake model presentations", "speaker": "Katie SLOCOMBE", "aff": "Dept of Psychology, University of York, York, United Kingdom", "video": false}, {"code": "C-18", "time": "15:30-15:45", "title": "Decoding context-specific acoustic variation in a noisy, graded vocal system", "speaker": "Antoine VALET", "aff": "Ape Social Mind Lab, Institut des sciences cognitives, Bron, France", "video": false}, {"code": "C-19", "time": "15:45-16:00", "title": "Context and development shape infant-led communication in wild bonobos (Pan paniscus)", "speaker": "Jolinde VLAEYEN", "aff": "Comparative BioCognition, Institute of Cognitive Science, Osnabrück University, Osnabrück, Germany", "video": false}, {"code": "C-20", "time": "16:00-16:15", "title": "Bottom-up classification of gestures in semi-wild chimpanzees", "speaker": "Chiara ZULBERTI", "aff": "University Leipzig, Leipzig, Germany", "video": false}, {"code": "C-21", "time": "16:15-16:30", "title": "Longitudinal development of planum temporale asymmetry in baboons and links with gestural communication", "speaker": "Eléa Thebault ANDERSEN", "aff": "Centre de Recherche en Psychologie et Neurosciences, UMR 7077 CNRS, Marseille, France", "video": false}, {"code": "C-22", "time": "16:30-16:45", "title": "Mother-infant facial tactile interactions in bonobos", "speaker": "Beatrice MALAMAN", "aff": "Department of Life Sciences and Systems Biology, University of Turin, Turin, Italy", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "14:30-16:45", "type": "Oral session", "title": "Sociality (2)", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S-08", "time": "14:30-14:45", "title": "Flexible turn-taking: how turn content and social characteristics shape temporal coordination in multimodal interactions in Guinea baboons", "speaker": "Lise HABIB-DASSETTO", "aff": "Institute Language, Communication and the Brain, Aix-Marseille Université, Marseille, France", "video": false}, {"code": "S-09", "time": "14:45-15:00", "title": "The influence of interdependence on inhibitory control in captive common marmosets", "speaker": "Maria Teresa VON DER LAGE", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "S-10", "time": "15:00-15:15", "title": "First indications of affective ageing alongside social ageing in a despotic macaque species", "speaker": "Roy HAMMER", "aff": "Department of Behavioral & Cognitive Ecology, University of Vienna, Vienna, Austria", "video": false}, {"code": "S-11", "time": "15:15-15:30", "title": "Maternal ranging adjustments facilitate offspring play opportunities in a 'solitary' ape", "speaker": "Paulina KUKOFKA", "aff": "Department for the Ecology of Animal Societies, Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}, {"code": "S-12", "time": "15:30-15:45", "title": "Baboon males combine sexual intimidation and affiliation to protect their paternity", "speaker": "Julia A. KUNZ", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zürich, Switzerland", "video": false}, {"code": "S-13", "time": "15:45-16:00", "title": "Male careers in wild Assamese macaques", "speaker": "Alice HILL", "aff": "Department of Behavioral Ecology, Georg-August University of Göttingen, Göttingen, NDS, Germany", "video": false}, {"code": "S-14", "time": "16:00-16:15", "title": "Attention biases for facial expressions in bonobos (Pan paniscus)", "speaker": "Daan LAMÉRIS", "aff": "Department of Cognitive Sciences, Indiana University Bloomington, Bloomington, United States", "video": false}, {"code": "S-15", "time": "16:15-16:30", "title": "Consortship as a stress-buffering context in female Japanese macaques (Macaca fuscata)", "speaker": "Dorian STEFENELLI", "aff": "Department of Behavioral and Cognitive Biology, Affenberg Research Station, University of Vienna, Vienna, Austria", "video": false}, {"code": "S-16", "time": "16:30-16:45", "title": "On the links between social diversity and social complexity in macaques", "speaker": "Julie DUBOSCQ", "aff": "Eco-Anthropologie (UMR7206), CNRS-MNHN-Université Paris Cité, Paris, France", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "14:30-16:45", "type": "Oral session", "title": "Ecology and conservation (2) / Welfare", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "EC-08", "time": "14:30-14:45", "title": "Demographic decline of critically endangered sifakas under climate change", "speaker": "Peter KAPPELER", "aff": "Behavioral Ecology & Sociobiology, German Primate Center, Göttingen, Germany", "video": false}, {"code": "EC-09", "time": "14:45-15:00", "title": "Impact of armed conflicts on mountain gorilla conservation in Virunga National Park (2021 – June 2025)", "speaker": "Jacques KATUTU", "aff": "Programme de conservation / monitoring des Gorilles de Montagne, Institut Congolais pour la Conservation de la Nature (ICCN), Goma, Nord-Kivu, Democratic Republic of the Congo", "video": false}, {"code": "EC-10", "time": "15:00-15:15", "title": "Can peers compensate for maternal loss? – Evidence from Yayasan Jejak Pulang's orangutan rehabilitation programme", "speaker": "Signe PREUSCHOFT", "aff": "FOUR PAWS, Hamburg, Germany", "video": false}, {"code": "EC-11", "time": "15:15-15:30", "title": "Determinants of post-fire recolonization of dry deciduous forest by lemurs in northwestern Madagascar", "speaker": "Ute RADESPIEL", "aff": "Institute of Zoology, University of Veterinary Medicine Hannover, Hannover, Germany", "video": false}, {"code": "EC-12", "time": "15:30-15:45", "title": "Evidence of female dispersal and viral transmission in fragmented chimpanzee habitats in the Greater Gombe Ecosystem, Tanzania", "speaker": "Mike WILSON", "aff": "University of Minnesota, St. Paul, MN, United States", "video": false}, {"code": "EC-13", "time": "15:45-16:00", "title": "The impact of parental loss on gorilla survival and sociality", "speaker": "Robin MORRISON", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zürich, Switzerland", "video": false}, {"code": "EC-14", "time": "16:00-16:15", "title": "Free-ranging bonobos exhibit higher levels of male-male grooming than female-female grooming in a forest-savanna mosaic", "speaker": "Victor NARAT", "aff": "ICM, Paris, France", "video": false}, {"code": "EC-15", "time": "16:15-16:30", "title": "More in bonobos or in chimpanzees? Differences in play, grooming, and agonistic behaviour between bonobos and chimpanzees", "speaker": "Ulrich MALOUEKI", "aff": "Life Sciences, University of Kinshasa, Kinshasa, Congo", "video": false}, {"code": "EC-16", "time": "16:30-16:45", "title": "Ghosts of predator past: long-term retention of predator recognition in naïve howler monkeys (Alouatta palliata)", "speaker": "Julián LEÓN", "aff": "Biology department, Universidad del Rosario, Bogotá, Colombia", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "17:00-17:30", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Thursday 2 July", "time": "17:30-18:30", "type": "Other", "title": "EFP General Assembly", "room": "Botany lecture hall — Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Thursday 2 July", "time": "18:30-19:30", "type": "Other", "title": "Jane Goodall and Biruté Galdikas obituaries", "room": "", "chairs": "Chairs: TBC", "talks": [{"code": "", "time": "18:30-19:30", "title": "Tribute", "speaker": "Anne PUSEY", "aff": "Duke University, Durham, North Carolina, United States", "video": false}, {"code": "", "time": "18:30-19:30", "title": "Tribute", "speaker": "Michael WILSON", "aff": "University of Minnesota, Saint Paul, Minnesota, United States", "video": false}, {"code": "", "time": "18:30-19:30", "title": "Tribute", "speaker": "Alison ASHBURY", "aff": "Max Planck Institute of Animal Behavior, Konstanz, Germany", "video": false}], "note": ""}, {"day": "Thursday 2 July", "time": "20:00", "type": "Social", "title": "Gala Dinner", "room": "Faune Restaurant", "chairs": "", "talks": [], "note": ""}, {"day": "Friday 3 July", "time": "08:00-09:00", "type": "Break", "title": "Coffee", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Friday 3 July", "time": "09:00-10:00", "type": "Plenary", "title": "Plenary 5", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "KN-05", "time": "09:00-10:00", "title": "The links between social and microbial ecologies: insights from wild primates and meerkats", "speaker": "Krishna BALASUBRAMANIAM", "aff": "Anglia Ruskin University, Cambridge, United Kingdom", "video": false}], "note": ""}, {"day": "Friday 3 July", "time": "10:00-11:30", "type": "Oral session", "title": "Behavioral ecology (3)", "room": "Botany lecture hall — Botanic Institute", "chairs": "Chairs: TBC", "talks": [{"code": "BE-13", "time": "10:00-10:15", "title": "Savannah chimpanzees use caves in northern Guinea", "speaker": "Leonardo BERTAMINI", "aff": "School of Biology, St Andrews University, St Andrews, United Kingdom", "video": false}, {"code": "BE-14", "time": "10:15-10:30", "title": "Chimpanzee (Pan troglodytes) use of a rock shelter in a savannah habitat: Dindefelo, Senegal", "speaker": "Flavia PICCOLELLA", "aff": "Dindefelo Biological Station, Jane Goodall Institute Spain in Senegal, Dindefelo, Kédougou, Senegal", "video": false}, {"code": "BE-15", "time": "10:30-10:45", "title": "Diverse prey and seasonal hunting in Issa chimpanzees from a savanna mosaic landscape in Tanzania", "speaker": "Alex PIEL", "aff": "Anthropology, University College London, London, United Kingdom", "video": false}, {"code": "BE-16", "time": "10:45-11:00", "title": "Between-population differences in orangutan (Pongo spp.) social responses to fluctuating fruit availability", "speaker": "Tom ROTH", "aff": "Animal Behaviour & Cognition, Utrecht University, Utrecht, Netherlands", "video": false}, {"code": "BE-17", "time": "11:00-11:15", "title": "Can NDVI capture food availability in a semi-arid environment? A Bayesian field phenology framework from chacma baboons in Namibia", "speaker": "Antoine LEQUEUX", "aff": "ISEM, University of Montpellier, Montpellier, France", "video": false}, {"code": "BE-18", "time": "11:15-11:30", "title": "Beyond omnivory: non-traditional isotopes reveal niche partitioning in wild chimpanzees and baboons", "speaker": "Danaé GUISERIX", "aff": "Archaeology, Environmental Change & Geo-Chemistry, Vrije Universiteit Brussel, Bruxelles, Belgium", "video": false}], "note": ""}, {"day": "Friday 3 July", "time": "10:00-11:30", "type": "Oral session", "title": "Sociality (3)", "room": "Auditorium — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "S-17", "time": "10:00-10:15", "title": "To stay or not to stay: how the social environment shapes dispersal decisions in mountain gorillas", "speaker": "Victoire MARTIGNAC", "aff": "Department of Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "S-18", "time": "10:15-10:30", "title": "Milestones of socio-emotional development and the developmental foundations of empathy in wild bonobos", "speaker": "Marie-Laure POIRET", "aff": "Durham University, Durham, United Kingdom", "video": false}, {"code": "S-19", "time": "10:30-10:45", "title": "Disentangling the contributions of maternal rank and male social behaviour on vervet integration post-dispersal", "speaker": "Alba MOTES RODRIGO", "aff": "Department of Ecology and Evolution, University of Lausanne, Lausanne, Switzerland", "video": false}, {"code": "S-20", "time": "10:45-11:00", "title": "Relaxed mothers, social offspring: linking maternal care style and juvenile behavior in capuchins", "speaker": "Julia OMENA", "aff": "Universidade de São Paulo, Sao Paulo, Brazil", "video": false}, {"code": "S-21", "time": "11:00-11:15", "title": "Rethinking maternal styles in human and nonhuman primates: A methodological application to wild chacma baboons", "speaker": "Eléonore ROLLAND", "aff": "University College London - Anthropology department, London, United Kingdom", "video": false}], "note": ""}, {"day": "Friday 3 July", "time": "10:00-11:30", "type": "Oral session", "title": "Cognition & social learning (4) / Tool use", "room": "Panathénées room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "CS-20", "time": "10:00-10:15", "title": "The forms and structures of chimpanzee algae fishing", "speaker": "Erin G. WESSLING", "aff": "MPI-EVAN & German Centre for Integrative Biodiversity Research (iDiv), Leipzig, Germany", "video": false}, {"code": "CS-21", "time": "10:15-10:30", "title": "What explains tool use differences between wild and sanctuary-living bonobos?", "speaker": "Lara ZANUTTO", "aff": "Ape Behaviour & Ecology Group, Department of Evolutionary Anthropology, University of Zurich, Zurich, Switzerland", "video": false}, {"code": "CS-22", "time": "10:30-10:45", "title": "Tool use in the pipeline? Cultural combinatory object play and its effect on tool use in long-tailed macaques (Macaca fascicularis)", "speaker": "Jeroen ZEWALD", "aff": "Messerli Research Institute, University of Veterinary Medicine, Vienna, Austria", "video": false}, {"code": "CS-23", "time": "10:45-11:00", "title": "Developmental drivers of tool use in children across cultures", "speaker": "Ellen SOETERS", "aff": "Department of Evolutionary Anthropology, University of Zurich, Zürich, Switzerland", "video": false}, {"code": "CS-24", "time": "11:00-11:15", "title": "Savanna chimpanzee social learning opportunities in the context of technological behaviours at Dindefelo, Senegal", "speaker": "Andreu SÁNCHEZ-MEGÍAS", "aff": "Department of Social Psychology and Quantitative Psychology, University of Barcelona, Barcelona, Spain", "video": false}], "note": ""}, {"day": "Friday 3 July", "time": "10:00-11:30", "type": "Oral session", "title": "Health & Welfare", "room": "Kouros room — MSH-Sud", "chairs": "Chairs: TBC", "talks": [{"code": "HW-01", "time": "10:00-10:15", "title": "The sunshine vitamin: myth or reality of the role of vitamin D in common marmoset's behavioral changes", "speaker": "Ruta VAICEKAUSKAITE", "aff": "SILABE, Université de Strasbourg, Niederhausbergen, France", "video": false}, {"code": "HW-02", "time": "10:15-10:30", "title": "Zoos are places where humans and non-human primates experience interactions", "speaker": "Audrey MAILLE", "aff": "Eco-anthropologie (UMR 7206 EA), MNHN / CNRS / Université Paris Cité, Paris, France", "video": false}, {"code": "HW-03", "time": "10:30-10:45", "title": "Wellbeing in the wild: measuring welfare in wild primates", "speaker": "Eleanor CROOKES", "aff": "Anthropology, University College London (UCL), London, United Kingdom", "video": false}, {"code": "HW-04", "time": "10:45-11:00", "title": "Assessing environmental influences on the physiology of stress in free-living common marmoset", "speaker": "Nicola SCHIEL", "aff": "Universidade Federal Rural de Pernambuco, Recife, Brasil", "video": false}, {"code": "HW-05", "time": "11:00-11:15", "title": "Self-regulation and sociality in zoo-housed chimpanzees and bonobos", "speaker": "Georgia SANDARS", "aff": "Durham University, Durham, United Kingdom", "video": false}], "note": ""}, {"day": "Friday 3 July", "time": "11:30-12:00", "type": "Break", "title": "Coffee break", "room": "Botanic Institute", "chairs": "", "talks": [], "note": ""}, {"day": "Friday 3 July", "time": "12:00-12:30", "type": "Other", "title": "Film, Closing remarks & EFP prizes", "room": "Botany lecture hall — Botanic Institute", "chairs": "", "talks": [], "note": ""}]};
+const TYPE_COLOR = {
+  "Plenary":"--t-plenary","Symposium":"--t-symposium","Oral session":"--t-oral",
+  "Flash talks":"--t-flash","Workshop":"--t-workshop","Poster":"--t-poster",
+  "Social":"--t-social","Break":"--t-break","Other":"--t-other"
+};
+const TYPE_ORDER = ["Plenary","Symposium","Oral session","Flash talks","Workshop","Poster","Social","Other","Break"];
+
+// give every session a stable id + searchable blob
+DATA.sessions.forEach((s,i)=>{
+  s._id = i;
+  s._blob = [s.title,s.room,s.chairs,s.type,s.time,s.day,
+    ...s.talks.map(t=>[t.code,t.title,t.speaker,t.aff].join(" "))].join(" ").toLowerCase();
+  s.talks.forEach((t,j)=>{ t._j=j; t._blob=[t.code,t.title,t.speaker,t.aff].join(" ").toLowerCase(); });
+});
+
+const state = { q:"", day:"All", type:"All", room:"All", open:new Set() };
+
+/* ---- populate filter controls ---- */
+const typeSel = document.getElementById("typeSel");
+const roomSel = document.getElementById("roomSel");
+(function(){
+  const types = [...new Set(DATA.sessions.map(s=>s.type))].sort((a,b)=>TYPE_ORDER.indexOf(a)-TYPE_ORDER.indexOf(b));
+  typeSel.innerHTML = '<option value="All">All types</option>' + types.map(x=>`<option>${x}</option>`).join("");
+  const rooms = [...new Set(DATA.sessions.map(s=>s.room).filter(Boolean))].sort();
+  roomSel.innerHTML = '<option value="All">All rooms</option>' + rooms.map(x=>`<option>${x}</option>`).join("");
+})();
+
+/* ---- day pills ---- */
+const dayPills = document.getElementById("dayPills");
+function buildDayPills(){
+  const all = [["All", DATA.sessions.length]].concat(
+    DATA.days.map(d=>[d, DATA.sessions.filter(s=>s.day===d).length]));
+  dayPills.innerHTML = all.map(([d,n])=>{
+    const lbl = d==="All" ? "All days" : d.replace(/ (June|July)$/, m=>m);
+    return `<button class="pill" data-day="${d}" aria-pressed="${state.day===d}">${lbl}<span class="n">${n}</span></button>`;
+  }).join("");
+}
+
+/* ---- search helpers ---- */
+function terms(){ return state.q.toLowerCase().split(/\s+/).filter(Boolean); }
+function hitAll(blob,ts){ return ts.every(t=>blob.includes(t)); }
+function esc(s){ return s.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+function hl(s,ts){
+  let out = esc(String(s||""));
+  if(!ts.length) return out;
+  for(const t of ts){
+    if(!t) continue;
+    const re = new RegExp("("+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+")","ig");
+    out = out.replace(re,'<mark>$1</mark>');
+  }
+  return out;
+}
+
+/* ---- compute filtered model ---- */
+function compute(){
+  const ts = terms();
+  const out = [];
+  for(const s of DATA.sessions){
+    if(state.day!=="All" && s.day!==state.day) continue;
+    if(state.type!=="All" && s.type!==state.type) continue;
+    if(state.room!=="All" && s.room!==state.room) continue;
+    let headerMatch=true, talkHits=s.talks.map(()=>true);
+    if(ts.length){
+      const sHeaderBlob=[s.title,s.room,s.chairs,s.type,s.time,s.day].join(" ").toLowerCase();
+      headerMatch = hitAll(sHeaderBlob,ts);
+      talkHits = s.talks.map(t=>hitAll(t._blob,ts));
+      const anyTalk = talkHits.some(Boolean);
+      if(!headerMatch && !anyTalk) continue; // session not visible
+    }
+    out.push({s, ts, headerMatch, talkHits});
+  }
+  return out;
+}
+
+/* ---- render ---- */
+const listEl = document.getElementById("list");
+function render(){
+  const model = compute();
+  const ts = terms();
+  // counts
+  let visTalks=0;
+  model.forEach(m=>{
+    if(ts.length){ visTalks += m.headerMatch && !m.talkHits.some(Boolean) ? m.s.talks.length : m.talkHits.filter(Boolean).length; }
+    else visTalks += m.s.talks.length;
+  });
+  const cEl=document.getElementById("count");
+  cEl.innerHTML = `<b>${model.length}</b> session${model.length!==1?"s":""} · <b>${visTalks}</b> talk${visTalks!==1?"s":""}`
+    + (ts.length||state.day!=="All"||state.type!=="All"||state.room!=="All" ? " shown" : " total");
+
+  // day pill counts reflect current type/room/search (recompute simple)
+  buildDayPills();
+
+  if(!model.length){
+    listEl.innerHTML = `<div class="empty"><div class="big">Nothing matches that.</div>Try fewer words, or reset the filters.</div>`;
+    return;
+  }
+
+  // group by day in canonical order
+  let html="";
+  DATA.days.forEach((day,di)=>{
+    const items = model.filter(m=>m.s.day===day);
+    if(!items.length) return;
+    const dno = String(di+1).padStart(2,"0");
+    const tc = items.reduce((a,m)=>a + (ts.length ? (m.headerMatch&&!m.talkHits.some(Boolean)?m.s.talks.length:m.talkHits.filter(Boolean).length) : m.s.talks.length),0);
+    html += `<section class="day"><div class="dayhead"><span class="dno">Day ${dno}</span><h2>${esc(day)}</h2><span class="dcount">${items.length} sessions · ${tc} talks</span></div>`;
+    html += renderDayBody(items, ts);
+    html += `</section>`;
+  });
+  listEl.innerHTML = html;
+}
+
+/* ---- shared talk + toggle builders ---- */
+function talkListHTML(s, m, ts){
+  if(!s.talks.length) return "";
+  let out="";
+  const showAllTalks = !ts.length || (m.headerMatch && !m.talkHits.some(Boolean));
+  s.talks.forEach((t,j)=>{
+    if(ts.length && !showAllTalks && !m.talkHits[j]) return;
+    const code = t.code ? `<span class="tk-code">${hl(t.code,ts)}</span>` : "";
+    const vid = t.video ? `<span class="tk-vid">VIDEO</span>` : "";
+    const who = t.speaker ? `<span class="who">${hl(t.speaker,ts)}</span>` : "";
+    const aff = t.aff ? (t.speaker? " · ":"") + hl(t.aff,ts) : "";
+    out += `<div class="talk"><div class="tk-time">${esc(t.time||"")}</div>`
+      + `<div class="tk-main"><div class="tk-title">${code}${hl(t.title,ts)}${vid}</div>`
+      + (who||aff ? `<div class="tk-by">${who}${aff}</div>`:"") + `</div></div>`;
+  });
+  return out;
+}
+function toggleHTML(s, isOpen, forced){
+  if(!s.talks.length) return "";
+  const n=s.talks.length;
+  if(forced) return `<div class="toggle" style="cursor:default"><span class="tw">${n} talk${n!==1?"s":""} in session</span></div>`;
+  return `<button class="toggle" data-toggle="${s._id}"><svg width="11" height="11" viewBox="0 0 11 11"><path d="M3 1l5 4.5L3 10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>${isOpen?"Hide":"Show"} programme</span> <span class="tw">${n} talk${n!==1?"s":""}</span></button>`;
+}
+const PIN = `<svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1C3.8 1 2 2.8 2 5c0 3 4 6 4 6s4-3 4-6c0-2.2-1.8-4-4-4z" fill="none" stroke="currentColor" stroke-width="1.1"/><circle cx="6" cy="5" r="1.3" fill="currentColor"/></svg>`;
+
+/* ---- parallel-slot grouping ---- */
+function toMin(hhmm){ const m=(hhmm||"").match(/(\d{1,2}):(\d{2})/); return m? (+m[1])*60+(+m[2]) : 1e9; }
+function startMin(time){ return toMin((time||"").split("-")[0]); }
+const ROOM_RANK=["Auditorium — MSH-Sud","Panathénées room — MSH-Sud","Kouros room — MSH-Sud","Botany lecture hall — Botanic Institute"];
+function roomRank(r){ const i=ROOM_RANK.indexOf(r||""); return i<0?50:i; }
+function slotTimeLabel(times){
+  let s=Infinity,e=-Infinity,sStr="",eStr="";
+  times.forEach(t=>{ const mm=(t||"").match(/\d{1,2}:\d{2}/g); if(!mm) return;
+    const a=toMin(mm[0]); if(a<s){s=a;sStr=mm[0];}
+    if(mm[1]){ const b=toMin(mm[1]); if(b>e){e=b;eStr=mm[1];} } });
+  return (sStr&&eStr)? sStr+"–"+eStr : (sStr||times[0]||"");
+}
+function renderDayBody(items, ts){
+  const groups=[], idx={};
+  for(const m of items){ const k=startMin(m.s.time);
+    if(idx[k]===undefined){ idx[k]=groups.length; groups.push({k,list:[]}); }
+    groups[idx[k]].list.push(m); }
+  groups.sort((a,b)=>a.k-b.k);
+  let html="";
+  for(const g of groups){
+    if(g.list.length<=1){ html += cardHTML(g.list[0], ts); continue; }
+    const cols=g.list.slice().sort((a,b)=> roomRank(a.s.room)-roomRank(b.s.room) || (a.s.room||"").localeCompare(b.s.room||""));
+    html += `<div class="pslot"><div class="pslot-head">`
+      + `<div class="pslot-time">${esc(slotTimeLabel(cols.map(m=>m.s.time)))}</div>`
+      + `<div class="pslot-label">∥ ${cols.length} parallel sessions</div></div>`
+      + `<div class="pcols">`;
+    for(const m of cols) html += colCardHTML(m, ts);
+    html += `</div></div>`;
+  }
+  return html;
+}
+function colCardHTML(m, ts){
+  const s=m.s;
+  const color=`var(${TYPE_COLOR[s.type]||"--t-other"})`;
+  const hasTalks=s.talks.length>0, forced=ts.length>0, isOpen=state.open.has(s._id);
+  const cls=["pcard"];
+  if(!hasTalks) cls.push("noTalks");
+  if(isOpen) cls.push("open");
+  if(forced && hasTalks) cls.push("forceopen");
+  const talksHTML = talkListHTML(s,m,ts);
+  const room = s.room
+    ? `<span class="pcard-room">${PIN}${hl(s.room,ts)}</span>`
+    : `<span class="pcard-room none">no room listed</span>`;
+  const chairs = s.chairs ? `<div class="meta2"><span class="chairs">${hl(s.chairs,ts)}</span></div>` : "";
+  return `<div class="${cls.join(" ")}" data-id="${s._id}">`
+    + `<div class="pcard-top">${room}<span class="pcard-time">${esc(s.time||"")}</span></div>`
+    + `<div class="chiprow"><span class="chip" style="background:${color}">${esc(s.type)}</span></div>`
+    + `<div class="stitle" data-title="${s._id}">${hl(s.title,ts)}</div>`
+    + chairs
+    + toggleHTML(s,isOpen,forced)
+    + (talksHTML ? `<div class="talks">${talksHTML}</div>`:"")
+    + `</div>`;
+}
+
+function cardHTML(m, ts){
+  const s=m.s;
+  const color=`var(${TYPE_COLOR[s.type]||"--t-other"})`;
+  const hasTalks=s.talks.length>0;
+  const forced = ts.length>0; // searching forces talk visibility
+  const isOpen = state.open.has(s._id);
+  const cls = ["card"];
+  if(!hasTalks) cls.push("noTalks");
+  if(isOpen) cls.push("open");
+  if(forced && hasTalks) cls.push("forceopen");
+
+  const talksHTML = talkListHTML(s, m, ts);
+  const room = s.room ? `<span class="room">${PIN}${hl(s.room,ts)}</span>` : "";
+  const chairs = s.chairs ? `<span class="chairs">${hl(s.chairs,ts)}</span>` : "";
+
+  return `<div class="${cls.join(" ")}" data-id="${s._id}">`
+    + `<div class="rail"><div class="time">${esc(s.time)}</div></div>`
+    + `<div class="body">`
+    + `<div class="chiprow"><span class="chip" style="background:${color}">${esc(s.type)}</span></div>`
+    + `<div class="stitle" data-title="${s._id}">${hl(s.title,ts)}</div>`
+    + (room||chairs ? `<div class="meta2">${room}${chairs}</div>`:"")
+    + toggleHTML(s, isOpen, forced)
+    + (talksHTML ? `<div class="talks">${talksHTML}</div>`:"")
+    + `</div></div>`;
+}
+
+/* ---- events ---- */
+const qEl=document.getElementById("q"), clearx=document.getElementById("clearx");
+let tmr=null;
+qEl.addEventListener("input",()=>{
+  clearx.style.display = qEl.value ? "block":"none";
+  clearTimeout(tmr); tmr=setTimeout(()=>{ state.q=qEl.value.trim(); render(); },120);
+});
+clearx.addEventListener("click",()=>{ qEl.value=""; state.q=""; clearx.style.display="none"; render(); qEl.focus(); });
+typeSel.addEventListener("change",()=>{ state.type=typeSel.value; render(); });
+roomSel.addEventListener("change",()=>{ state.room=roomSel.value; render(); });
+dayPills.addEventListener("click",e=>{ const b=e.target.closest(".pill"); if(!b)return; state.day=b.dataset.day; render(); });
+listEl.addEventListener("click",e=>{
+  const tg=e.target.closest("[data-toggle]"); 
+  const ti=e.target.closest("[data-title]");
+  let id=null;
+  if(tg) id=+tg.dataset.toggle;
+  else if(ti){ const card=ti.closest(".card,.pcard"); if(card && !card.classList.contains("noTalks") && !card.classList.contains("forceopen")) id=+ti.dataset.title; }
+  if(id===null) return;
+  if(state.open.has(id)) state.open.delete(id); else state.open.add(id);
+  render();
+});
+document.getElementById("expandAll").addEventListener("click",()=>{
+  DATA.sessions.forEach(s=>{ if(s.talks.length) state.open.add(s._id); }); render();
+});
+document.getElementById("collapseAll").addEventListener("click",()=>{ state.open.clear(); render(); });
+document.getElementById("printBtn").addEventListener("click",()=>window.print());
+
+/* ============ PDF EXPORT (jsPDF, selectable text) ============ */
+document.getElementById("pdfBtn").addEventListener("click", exportPDF);
+function exportPDF(){
+  const model = compute();
+  if(!window.jspdf || !window.jspdf.jsPDF){
+    alert("PDF library didn't load (offline?). Using the browser's Print dialog instead — choose “Save as PDF”.");
+    window.print(); return;
+  }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:"pt", format:"a4"});
+  const PW=doc.internal.pageSize.getWidth(), PH=doc.internal.pageSize.getHeight();
+  const M=44, RIGHT=PW-M, CW=RIGHT-M;
+  let y=0, page=1;
+
+  const FOREST=[46,71,51], AMBER=[160,80,20], INK=[32,39,30], MUTED=[110,108,92], LINE=[210,206,190];
+  function footer(){
+    doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(150);
+    doc.text("EFP 2026 — Programme", M, PH-22);
+    doc.text("Page "+page, RIGHT, PH-22, {align:"right"});
+  }
+  function newpage(){ footer(); doc.addPage(); page++; y=M; }
+  function need(h){ if(y+h > PH-40) newpage(); }
+  function rule(){ doc.setDrawColor(...LINE); doc.setLineWidth(.6); doc.line(M,y,RIGHT,y); }
+  // draws an amber code tag then the title, wrapping with a reduced first-line width; returns new y
+  function drawTalkHead(x, w, code, title, yStart){
+    let yy=yStart, firstIndent=0;
+    if(code){
+      doc.setFont("courier","bold"); doc.setFontSize(8); doc.setTextColor(...AMBER);
+      doc.text(code, x, yy);
+      firstIndent = doc.getTextWidth(code+"  ");
+    }
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(...INK);
+    const words=String(title).split(" ");
+    let line="", lines=[], curMax=w-firstIndent;
+    for(const word of words){
+      const test=line?line+" "+word:word;
+      if(line && doc.getTextWidth(test)>curMax){ lines.push(line); line=word; curMax=w; }
+      else line=test;
+    }
+    if(line) lines.push(line);
+    lines.forEach((ln,i)=>{ doc.text(ln, x+(i===0?firstIndent:0), yy); yy+=11; });
+    return yy;
+  }
+  function talkHeadHeight(code,title,w){
+    // mirror the wrap to measure height before drawing (for page-break check)
+    doc.setFont("courier","bold"); doc.setFontSize(8);
+    const firstIndent = code? doc.getTextWidth(code+"  "):0;
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5);
+    const words=String(title).split(" "); let line="",n=0,curMax=w-firstIndent;
+    for(const word of words){ const test=line?line+" "+word:word;
+      if(line && doc.getTextWidth(test)>curMax){ n++; line=word; curMax=w; } else line=test; }
+    if(line) n++;
+    return n*11;
+  }
+
+  // ---- cover header ----
+  y=M;
+  doc.setFillColor(...FOREST); doc.rect(0,0,PW,118,"F");
+  doc.setFillColor(...AMBER); doc.rect(0,118,PW,3,"F");
+  doc.setTextColor(205,191,160); doc.setFont("helvetica","normal"); doc.setFontSize(9);
+  doc.text("11TH EFP MEETING · MONTPELLIER", M, 40);
+  doc.setTextColor(244,242,231); doc.setFont("times","bold"); doc.setFontSize(26);
+  doc.text("European Federation for Primatology 2026", M, 70, {maxWidth:CW});
+  doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(216,210,190);
+  doc.text("29 June – 3 July 2026   ·   MSH-Sud & Botanic Institute   ·   Montpellier, France", M, 96);
+  y=150;
+
+  // applied filters line
+  const filt=[];
+  if(state.q) filt.push('search: "'+state.q+'"');
+  if(state.day!=="All") filt.push("day: "+state.day);
+  if(state.type!=="All") filt.push("type: "+state.type);
+  if(state.room!=="All") filt.push("room: "+state.room);
+  let nTalks=0; model.forEach(m=>{ const ts=terms();
+    nTalks += ts.length ? (m.headerMatch&&!m.talkHits.some(Boolean)?m.s.talks.length:m.talkHits.filter(Boolean).length) : m.s.talks.length; });
+  doc.setFontSize(9); doc.setTextColor(...MUTED); doc.setFont("helvetica","italic");
+  const sub = (filt.length? ("Filtered — "+filt.join("  ·  ")) : "Full programme")
+    + "   ("+model.length+" sessions, "+nTalks+" talks)";
+  doc.text(sub, M, y, {maxWidth:CW}); y+=10;
+  doc.setDrawColor(...AMBER); doc.setLineWidth(1.2); doc.line(M,y,RIGHT,y); y+=20;
+
+  const ts=terms();
+  DATA.days.forEach((day,di)=>{
+    const items=model.filter(m=>m.s.day===day); if(!items.length) return;
+    need(46);
+    doc.setFont("times","bold"); doc.setFontSize(15); doc.setTextColor(...INK);
+    doc.text(day, M, y);
+    doc.setFont("courier","normal"); doc.setFontSize(8); doc.setTextColor(...AMBER);
+    doc.text(("DAY "+String(di+1).padStart(2,"0")).toUpperCase(), RIGHT, y, {align:"right"});
+    y+=6; doc.setDrawColor(...INK); doc.setLineWidth(1); doc.line(M,y,RIGHT,y); y+=16;
+
+    // tag parallel groups (sessions that share a start time)
+    const _grp={};
+    items.forEach(m=>{ const k=startMin(m.s.time); (_grp[k]=_grp[k]||[]).push(m); });
+    const _firstOfPar={};
+    Object.keys(_grp).forEach(k=>{ const arr=_grp[k]; if(arr.length>1){
+      _firstOfPar[arr[0].s._id]={n:arr.length, lbl:slotTimeLabel(arr.map(x=>x.s.time))}; } });
+
+    items.forEach(m=>{
+      const s=m.s;
+      const _pf=_firstOfPar[s._id];
+      if(_pf){ need(22);
+        doc.setFont("courier","bold"); doc.setFontSize(7.5); doc.setTextColor(...AMBER);
+        doc.text(_pf.n+" PARALLEL SESSIONS  ·  "+_pf.lbl, M, y); y+=8;
+        doc.setDrawColor(...AMBER); doc.setLineWidth(.5); doc.line(M,y,M+150,y); y+=12; }
+      // session header block
+      const titleLines=doc.splitTextToSize(s.title, CW-96);
+      const metaBits=[s.room, s.chairs].filter(Boolean).join("   ·   ");
+      const metaLines = metaBits? doc.splitTextToSize(metaBits, CW-96):[];
+      need(16 + titleLines.length*15 + metaLines.length*11 + 8);
+
+      // time + type at left column
+      doc.setFont("courier","bold"); doc.setFontSize(9); doc.setTextColor(...FOREST);
+      doc.text(s.time||"", M, y+1);
+      doc.setFont("courier","normal"); doc.setFontSize(7.5); doc.setTextColor(...AMBER);
+      doc.text(s.type.toUpperCase(), M, y+13, {maxWidth:88});
+
+      // title
+      doc.setFont("times","bold"); doc.setFontSize(12.5); doc.setTextColor(...INK);
+      let ty=y;
+      titleLines.forEach(ln=>{ doc.text(ln, M+96, ty); ty+=15; });
+      if(metaLines.length){
+        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
+        metaLines.forEach(ln=>{ doc.text(ln, M+96, ty); ty+=11; });
+      }
+      y = Math.max(y+20, ty) + 4;
+
+      // talks
+      const showAll = !ts.length || (m.headerMatch && !m.talkHits.some(Boolean));
+      s.talks.forEach((t,j)=>{
+        if(ts.length && !showAll && !m.talkHits[j]) return;
+        const by=[t.speaker, t.aff].filter(Boolean).join(" · ");
+        const byLines= by? doc.splitTextToSize(by, CW-96):[];
+        need(talkHeadHeight(t.code,t.title,CW-96) + byLines.length*10 + 8);
+        // time (mono, left rail)
+        doc.setFont("courier","normal"); doc.setFontSize(7.5); doc.setTextColor(...MUTED);
+        if(t.time) doc.text(t.time, M+8, y);
+        // code + title (clean wrap via helper)
+        y = drawTalkHead(M+96, CW-96, t.code, t.title, y);
+        // speaker · affiliation
+        if(byLines.length){
+          doc.setFont("helvetica","italic"); doc.setFontSize(8.3); doc.setTextColor(...MUTED);
+          byLines.forEach(ln=>{ doc.text(ln, M+96, y); y+=10; });
+        }
+        y+=4;
+      });
+      y+=4; rule(); y+=12;
+    });
+    y+=8;
+  });
+  footer();
+  const stamp=new Date().toISOString().slice(0,10);
+  doc.save("EFP-2026-programme"+(state.day!=="All"?("-"+state.day.replace(/\s+/g,"")):"")+"_"+stamp+".pdf");
+}
+
+/* boot */
+buildDayPills();
+render();
+</script>
+</body>
+</html>
