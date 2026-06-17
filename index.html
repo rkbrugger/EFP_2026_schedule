@@ -583,6 +583,138 @@ function exportPDF(){
     return n*11;
   }
 
+  // ---- single (full-width) session ----
+  function drawSingle(m){
+    const s=m.s;
+    doc.setFont("times","bold"); doc.setFontSize(12.5);
+    const titleLines=doc.splitTextToSize(s.title, CW-96);
+    const metaBits=[s.room, s.chairs].filter(Boolean).join("   ·   ");
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5);
+    const metaLines = metaBits? doc.splitTextToSize(metaBits, CW-96):[];
+    need(16 + titleLines.length*15 + metaLines.length*11 + 8);
+    doc.setFont("courier","bold"); doc.setFontSize(9); doc.setTextColor(...FOREST);
+    doc.text(s.time||"", M, y+1);
+    doc.setFont("courier","normal"); doc.setFontSize(7.5); doc.setTextColor(...AMBER);
+    doc.text(s.type.toUpperCase(), M, y+13, {maxWidth:88});
+    doc.setFont("times","bold"); doc.setFontSize(12.5); doc.setTextColor(...INK);
+    let ty=y;
+    titleLines.forEach(ln=>{ doc.text(ln, M+96, ty); ty+=15; });
+    if(metaLines.length){
+      doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
+      metaLines.forEach(ln=>{ doc.text(ln, M+96, ty); ty+=11; });
+    }
+    y = Math.max(y+20, ty) + 4;
+    const showAll = !ts.length || (m.headerMatch && !m.talkHits.some(Boolean));
+    s.talks.forEach((t,j)=>{
+      if(ts.length && !showAll && !m.talkHits[j]) return;
+      const by=[t.speaker, t.aff].filter(Boolean).join(" · ");
+      doc.setFont("helvetica","italic"); doc.setFontSize(8.3);
+      const byLines= by? doc.splitTextToSize(by, CW-96):[];
+      need(talkHeadHeight(t.code,t.title,CW-96) + byLines.length*10 + 8);
+      doc.setFont("courier","normal"); doc.setFontSize(7.5); doc.setTextColor(...MUTED);
+      if(t.time) doc.text(t.time, M+8, y);
+      y = drawTalkHead(M+96, CW-96, t.code, t.title, y);
+      if(byLines.length){
+        doc.setFont("helvetica","italic"); doc.setFontSize(8.3); doc.setTextColor(...MUTED);
+        byLines.forEach(ln=>{ doc.text(ln, M+96, y); y+=10; });
+      }
+      y+=4;
+    });
+    y+=4; rule(); y+=12;
+  }
+
+  // ---- parallel sessions, side by side as columns ----
+  function drawParallel(cols){
+    const n=cols.length, gut=12;
+    const colW=(CW-gut*(n-1))/n;
+    const colX=i=>M+i*(colW+gut);
+    const lbl=slotTimeLabel(cols.map(m=>m.s.time));
+
+    // measures/draws one column header at (x,yTop); returns its height
+    function head(s,x,yTop,draw){
+      let yy=yTop;
+      yy+=10; if(draw){ doc.setFont("courier","bold"); doc.setFontSize(8.5); doc.setTextColor(...FOREST); doc.text(s.time||"",x,yy); }
+      doc.setFont("helvetica","bold"); doc.setFontSize(8.5);
+      doc.splitTextToSize(s.room||"—", colW).forEach(l=>{ yy+=10; if(draw){ doc.setTextColor(...FOREST); doc.text(l,x,yy);} });
+      yy+=11; if(draw){ doc.setFont("courier","normal"); doc.setFontSize(7); doc.setTextColor(...AMBER); doc.text((s.type||"").toUpperCase(),x,yy,{maxWidth:colW}); }
+      doc.setFont("times","bold"); doc.setFontSize(10.5);
+      doc.splitTextToSize(s.title, colW).forEach(l=>{ yy+=12.5; if(draw){ doc.setTextColor(...INK); doc.text(l,x,yy);} });
+      if(s.chairs){ doc.setFont("helvetica","italic"); doc.setFontSize(7.8);
+        doc.splitTextToSize(s.chairs, colW).forEach(l=>{ yy+=9.5; if(draw){ doc.setTextColor(...MUTED); doc.text(l,x,yy);} }); }
+      return yy-yTop+4;
+    }
+    // measures/draws one talk at (x,yTop); returns its height
+    function talk(t,x,yTop,draw){
+      let yy=yTop;
+      yy+=9; if(draw){ doc.setFont("courier","normal"); doc.setFontSize(6.8); doc.setTextColor(...MUTED); if(t.time) doc.text(t.time,x,yy); }
+      doc.setFont("courier","bold"); doc.setFontSize(7);
+      const indent=t.code? doc.getTextWidth(t.code+" "):0;
+      doc.setFont("helvetica","normal"); doc.setFontSize(8.5);
+      const words=String(t.title).split(" "); let line="",lines=[],curMax=colW-indent;
+      for(const w of words){ const test=line?line+" "+w:w;
+        if(line && doc.getTextWidth(test)>curMax){ lines.push(line); line=w; curMax=colW; } else line=test; }
+      if(line) lines.push(line);
+      lines.forEach((l,i)=>{ yy+=10;
+        if(draw){
+          if(i===0 && t.code){ doc.setFont("courier","bold"); doc.setFontSize(7); doc.setTextColor(...AMBER); doc.text(t.code,x,yy); }
+          doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...INK);
+          doc.text(l, x+(i===0?indent:0), yy);
+        }
+      });
+      const by=[t.speaker,t.aff].filter(Boolean).join(" · ");
+      if(by){ doc.setFont("helvetica","italic"); doc.setFontSize(7.6);
+        doc.splitTextToSize(by,colW).forEach(l=>{ yy+=9; if(draw){ doc.setTextColor(...MUTED); doc.text(l,x,yy);} }); }
+      return yy-yTop+5;
+    }
+    function verts(yTop,yBot){ doc.setDrawColor(...LINE); doc.setLineWidth(.4);
+      for(let i=1;i<n;i++){ const vx=colX(i)-gut/2; doc.line(vx,yTop,vx,yBot); } }
+    function contHead(){
+      doc.setFont("courier","bold"); doc.setFontSize(7); doc.setTextColor(...AMBER);
+      doc.text(lbl+"  ·  CONTINUED", M, y); y+=10;
+      let hb=0;
+      cols.forEach((m,i)=>{ doc.setFont("helvetica","bold"); doc.setFontSize(8); doc.setTextColor(...FOREST);
+        let yy=0; doc.splitTextToSize(m.s.room||"—", colW).forEach(l=>{ yy+=9; doc.text(l,colX(i),y+yy); }); hb=Math.max(hb,yy); });
+      y+=hb+6; doc.setDrawColor(...LINE); doc.setLineWidth(.5); doc.line(M,y,RIGHT,y); y+=10;
+    }
+
+    // visible talks per column (respect filter)
+    const vis=cols.map(m=>{ const s=m.s;
+      const showAll = !ts.length || (m.headerMatch && !m.talkHits.some(Boolean));
+      return s.talks.filter((t,j)=> !ts.length || showAll || m.talkHits[j]); });
+
+    // header band
+    const bandH=Math.max(...cols.map(m=>head(m.s,0,0,false)));
+    need(20 + bandH + 18);
+    doc.setFont("courier","bold"); doc.setFontSize(7.5); doc.setTextColor(...AMBER);
+    doc.text(n+" PARALLEL SESSIONS  ·  "+lbl, M, y); y+=7;
+    doc.setDrawColor(...AMBER); doc.setLineWidth(.6); doc.line(M,y,RIGHT,y); y+=10;
+    const bandTop=y;
+    cols.forEach((m,i)=> head(m.s, colX(i), y, true));
+    verts(bandTop, y+bandH);
+    y+=bandH;
+    doc.setDrawColor(...LINE); doc.setLineWidth(.6); doc.line(M,y,RIGHT,y); y+=8;
+    let vTop=y;
+
+    // talk rows (row-aligned across columns)
+    const rows=Math.max(0,...vis.map(a=>a.length));
+    for(let j=0;j<rows;j++){
+      const rowH=Math.max(...cols.map((m,i)=> vis[i][j]? talk(vis[i][j],0,0,false):0), 1);
+      if(y+rowH > PH-40){
+        verts(vTop, y);
+        newpage();
+        contHead();
+        vTop=y;
+      }
+      cols.forEach((m,i)=>{ if(vis[i][j]) talk(vis[i][j], colX(i), y, true); });
+      y+=rowH;
+      doc.setDrawColor(...LINE); doc.setLineWidth(.3);
+      doc.setLineDashPattern([1,2],0); doc.line(M,y,RIGHT,y); doc.setLineDashPattern([],0);
+      y+=6;
+    }
+    verts(vTop, y);
+    y+=2; doc.setDrawColor(...LINE); doc.setLineWidth(.6); doc.line(M,y,RIGHT,y); y+=14;
+  }
+
   // ---- cover header ----
   y=M;
   doc.setFillColor(...FOREST); doc.rect(0,0,PW,118,"F");
@@ -619,62 +751,14 @@ function exportPDF(){
     doc.text(("DAY "+String(di+1).padStart(2,"0")).toUpperCase(), RIGHT, y, {align:"right"});
     y+=6; doc.setDrawColor(...INK); doc.setLineWidth(1); doc.line(M,y,RIGHT,y); y+=16;
 
-    // tag parallel groups (sessions that share a start time)
-    const _grp={};
-    items.forEach(m=>{ const k=startMin(m.s.time); (_grp[k]=_grp[k]||[]).push(m); });
-    const _firstOfPar={};
-    Object.keys(_grp).forEach(k=>{ const arr=_grp[k]; if(arr.length>1){
-      _firstOfPar[arr[0].s._id]={n:arr.length, lbl:slotTimeLabel(arr.map(x=>x.s.time))}; } });
-
-    items.forEach(m=>{
-      const s=m.s;
-      const _pf=_firstOfPar[s._id];
-      if(_pf){ need(22);
-        doc.setFont("courier","bold"); doc.setFontSize(7.5); doc.setTextColor(...AMBER);
-        doc.text(_pf.n+" PARALLEL SESSIONS  ·  "+_pf.lbl, M, y); y+=8;
-        doc.setDrawColor(...AMBER); doc.setLineWidth(.5); doc.line(M,y,M+150,y); y+=12; }
-      // session header block
-      const titleLines=doc.splitTextToSize(s.title, CW-96);
-      const metaBits=[s.room, s.chairs].filter(Boolean).join("   ·   ");
-      const metaLines = metaBits? doc.splitTextToSize(metaBits, CW-96):[];
-      need(16 + titleLines.length*15 + metaLines.length*11 + 8);
-
-      // time + type at left column
-      doc.setFont("courier","bold"); doc.setFontSize(9); doc.setTextColor(...FOREST);
-      doc.text(s.time||"", M, y+1);
-      doc.setFont("courier","normal"); doc.setFontSize(7.5); doc.setTextColor(...AMBER);
-      doc.text(s.type.toUpperCase(), M, y+13, {maxWidth:88});
-
-      // title
-      doc.setFont("times","bold"); doc.setFontSize(12.5); doc.setTextColor(...INK);
-      let ty=y;
-      titleLines.forEach(ln=>{ doc.text(ln, M+96, ty); ty+=15; });
-      if(metaLines.length){
-        doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
-        metaLines.forEach(ln=>{ doc.text(ln, M+96, ty); ty+=11; });
-      }
-      y = Math.max(y+20, ty) + 4;
-
-      // talks
-      const showAll = !ts.length || (m.headerMatch && !m.talkHits.some(Boolean));
-      s.talks.forEach((t,j)=>{
-        if(ts.length && !showAll && !m.talkHits[j]) return;
-        const by=[t.speaker, t.aff].filter(Boolean).join(" · ");
-        const byLines= by? doc.splitTextToSize(by, CW-96):[];
-        need(talkHeadHeight(t.code,t.title,CW-96) + byLines.length*10 + 8);
-        // time (mono, left rail)
-        doc.setFont("courier","normal"); doc.setFontSize(7.5); doc.setTextColor(...MUTED);
-        if(t.time) doc.text(t.time, M+8, y);
-        // code + title (clean wrap via helper)
-        y = drawTalkHead(M+96, CW-96, t.code, t.title, y);
-        // speaker · affiliation
-        if(byLines.length){
-          doc.setFont("helvetica","italic"); doc.setFontSize(8.3); doc.setTextColor(...MUTED);
-          byLines.forEach(ln=>{ doc.text(ln, M+96, y); y+=10; });
-        }
-        y+=4;
-      });
-      y+=4; rule(); y+=12;
+    // group into time-slots; parallel slots render as side-by-side columns
+    const slots=[], _sidx={};
+    items.forEach(m=>{ const k=startMin(m.s.time);
+      if(_sidx[k]===undefined){ _sidx[k]=slots.length; slots.push([]); } slots[_sidx[k]].push(m); });
+    slots.forEach(list=>{
+      if(list.length<=1){ drawSingle(list[0]); return; }
+      const cols=list.slice().sort((a,b)=> roomRank(a.s.room)-roomRank(b.s.room) || (a.s.room||"").localeCompare(b.s.room||""));
+      drawParallel(cols);
     });
     y+=8;
   });
