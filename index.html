@@ -134,21 +134,32 @@
   .pslot-head{display:grid;grid-template-columns:84px 1fr;align-items:center}
   .pslot-time{padding:11px 12px 11px 4px;border-right:1px solid var(--line);text-align:right;
     font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--forest)}
-  .pslot-label{padding:5px 4px 5px 16px;font:600 10px "IBM Plex Mono",monospace;letter-spacing:.11em;
+  .pslot-label{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    padding:5px 4px 5px 16px;font:600 10px "IBM Plex Mono",monospace;letter-spacing:.11em;
     text-transform:uppercase;color:var(--amber)}
+  .pslot-toggle{font:500 11px "Inter";letter-spacing:0;text-transform:none;color:var(--olive);
+    background:transparent;border:0;cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:5px}
+  .pslot-toggle svg{transition:transform .18s}
+  .pslot.open .pslot-toggle svg{transform:rotate(90deg)}
   .pcols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(210px,1fr);
     overflow-x:auto;margin-left:84px;scrollbar-width:thin}
-  .pcard{padding:12px 16px 16px;border-left:1px solid var(--line);border-top:1px dashed var(--line);
-    min-width:0;position:relative}
+  /* each column is a subgrid sharing the slot's row tracks → rows align across columns */
+  .pcard{display:grid;grid-template-rows:subgrid;grid-row:1 / -1;
+    padding:0 16px;border-left:1px solid var(--line);min-width:0;position:relative}
+  .pcard-head{padding:12px 0 2px;min-width:0}
   .pcard-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px}
   .pcard-room{display:inline-flex;align-items:center;gap:5px;font:600 12px "Inter";color:var(--forest);
     background:#E7E4D6;border:1px solid var(--line);border-radius:5px;padding:2px 8px}
   .pcard-room.none{color:var(--muted);background:transparent;border-style:dashed}
   .pcard-time{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);white-space:nowrap}
-  .pcard .stitle{font-size:16px;margin-top:6px}
+  .pcard .stitle{font-size:16px;margin-top:6px;cursor:default}
+  .pcard .toggle{margin-top:9px}
+  .pcard .talk{padding:9px 16px;border-top:1px dotted var(--line);margin:0 -16px}
+  .pcard .talks .talk:first-child{border-top:1px solid var(--line-strong)}
 
   .talks{margin:10px 0 2px;display:none;border-left:2px solid var(--line);padding-left:0}
-  .card.open .talks,.card.forceopen .talks,.pcard.open .talks,.pcard.forceopen .talks{display:block}
+  .card.open .talks,.card.forceopen .talks{display:block}
+  .pcard.open .talks,.pcard.forceopen .talks{display:contents}
   .talk{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:8px 0 8px 14px;
     border-top:1px dotted var(--line)}
   .talk:first-child{border-top:0}
@@ -189,7 +200,8 @@
     .toggle{display:none}
     body{background:#fff}
     .pcols{display:block;margin-left:0;overflow:visible}
-    .pcard{border-left:0}
+    .pcard{display:block;border-left:0}
+    .pcard .talk{margin:0;padding:8px 0}
   }
 </style>
 </head>
@@ -394,6 +406,12 @@ function slotTimeLabel(times){
     if(mm[1]){ const b=toMin(mm[1]); if(b>e){e=b;eStr=mm[1];} } });
   return (sStr&&eStr)? sStr+"–"+eStr : (sStr||times[0]||"");
 }
+function renderedTalkCount(m, ts){
+  const s=m.s;
+  if(!s.talks.length) return 0;
+  const showAll = !ts.length || (m.headerMatch && !m.talkHits.some(Boolean));
+  return showAll ? s.talks.length : m.talkHits.filter(Boolean).length;
+}
 function renderDayBody(items, ts){
   const groups=[], idx={};
   for(const m of items){ const k=startMin(m.s.time);
@@ -404,34 +422,47 @@ function renderDayBody(items, ts){
   for(const g of groups){
     if(g.list.length<=1){ html += cardHTML(g.list[0], ts); continue; }
     const cols=g.list.slice().sort((a,b)=> roomRank(a.s.room)-roomRank(b.s.room) || (a.s.room||"").localeCompare(b.s.room||""));
-    html += `<div class="pslot"><div class="pslot-head">`
+    const forced = ts.length>0;
+    const ids = cols.filter(m=>m.s.talks.length).map(m=>m.s._id);
+    const slotOpen = forced || (ids.length>0 && ids.every(id=>state.open.has(id)));
+    const maxTalks = cols.reduce((mx,m)=>Math.max(mx, renderedTalkCount(m,ts)),0);
+    const rows = 1 + maxTalks;               // 1 header row + one row per talk position
+    const totalTalks = cols.reduce((a,m)=>a+m.s.talks.length,0);
+    const slotToggle = (forced || !ids.length) ? ""
+      : `<button class="pslot-toggle" data-slot="${ids.join(",")}"><svg width="10" height="10" viewBox="0 0 11 11"><path d="M3 1l5 4.5L3 10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>${slotOpen?"Hide":"Show"} all programmes (${totalTalks})</button>`;
+    html += `<div class="pslot${slotOpen?" open":""}"><div class="pslot-head">`
       + `<div class="pslot-time">${esc(slotTimeLabel(cols.map(m=>m.s.time)))}</div>`
-      + `<div class="pslot-label">∥ ${cols.length} parallel sessions</div></div>`
-      + `<div class="pcols">`;
-    for(const m of cols) html += colCardHTML(m, ts);
+      + `<div class="pslot-label"><span>∥ ${cols.length} parallel sessions</span>${slotToggle}</div></div>`
+      + `<div class="pcols" style="grid-template-rows:repeat(${rows},auto)">`;
+    for(const m of cols) html += colCardHTML(m, ts, slotOpen, ids);
     html += `</div></div>`;
   }
   return html;
 }
-function colCardHTML(m, ts){
+function colCardHTML(m, ts, slotOpen, slotIds){
   const s=m.s;
   const color=`var(${TYPE_COLOR[s.type]||"--t-other"})`;
-  const hasTalks=s.talks.length>0, forced=ts.length>0, isOpen=state.open.has(s._id);
+  const hasTalks=s.talks.length>0, forced=ts.length>0;
   const cls=["pcard"];
   if(!hasTalks) cls.push("noTalks");
-  if(isOpen) cls.push("open");
-  if(forced && hasTalks) cls.push("forceopen");
+  if(slotOpen && hasTalks) cls.push(forced?"forceopen":"open");
   const talksHTML = talkListHTML(s,m,ts);
   const room = s.room
     ? `<span class="pcard-room">${PIN}${hl(s.room,ts)}</span>`
     : `<span class="pcard-room none">no room listed</span>`;
   const chairs = s.chairs ? `<div class="meta2"><span class="chairs">${hl(s.chairs,ts)}</span></div>` : "";
+  const n=s.talks.length;
+  const ctl = !hasTalks ? ""
+    : (forced ? `<div class="toggle" style="cursor:default"><span class="tw">${n} talk${n!==1?"s":""}</span></div>`
+       : `<button class="toggle" data-slot="${slotIds.join(",")}"><svg width="11" height="11" viewBox="0 0 11 11"><path d="M3 1l5 4.5L3 10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>${slotOpen?"Hide":"Show"} programme</span> <span class="tw">${n} talk${n!==1?"s":""}</span></button>`);
   return `<div class="${cls.join(" ")}" data-id="${s._id}">`
-    + `<div class="pcard-top">${room}<span class="pcard-time">${esc(s.time||"")}</span></div>`
-    + `<div class="chiprow"><span class="chip" style="background:${color}">${esc(s.type)}</span></div>`
-    + `<div class="stitle" data-title="${s._id}">${hl(s.title,ts)}</div>`
-    + chairs
-    + toggleHTML(s,isOpen,forced)
+    + `<div class="pcard-head">`
+      + `<div class="pcard-top">${room}<span class="pcard-time">${esc(s.time||"")}</span></div>`
+      + `<div class="chiprow"><span class="chip" style="background:${color}">${esc(s.type)}</span></div>`
+      + `<div class="stitle">${hl(s.title,ts)}</div>`
+      + chairs
+      + ctl
+    + `</div>`
     + (talksHTML ? `<div class="talks">${talksHTML}</div>`:"")
     + `</div>`;
 }
@@ -474,6 +505,14 @@ typeSel.addEventListener("change",()=>{ state.type=typeSel.value; render(); });
 roomSel.addEventListener("change",()=>{ state.room=roomSel.value; render(); });
 dayPills.addEventListener("click",e=>{ const b=e.target.closest(".pill"); if(!b)return; state.day=b.dataset.day; render(); });
 listEl.addEventListener("click",e=>{
+  const sl=e.target.closest("[data-slot]");
+  if(sl){
+    const ids=sl.dataset.slot.split(",").map(Number).filter(n=>!isNaN(n));
+    const anyOpen=ids.some(id=>state.open.has(id));
+    if(anyOpen) ids.forEach(id=>state.open.delete(id));
+    else ids.forEach(id=>state.open.add(id));
+    render(); return;
+  }
   const tg=e.target.closest("[data-toggle]"); 
   const ti=e.target.closest("[data-title]");
   let id=null;
